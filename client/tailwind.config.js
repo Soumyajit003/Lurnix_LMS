@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      colors:{
+        'primary':'#9810fa'
+      },
       gridTemplateColumns:{
         'auto': 'repeat(auto-fit, minmax(200px, 1fr))'
       },

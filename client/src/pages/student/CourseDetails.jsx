@@ -95,7 +95,7 @@ const CourseDetails = () => {
   return courseData ? (
     <>
       <div className="flex md:flex-row flex-col-reverse gap-10 relative items-start justify-between md:px-36 px-8 md:pt-20 pt-10 text-left">
-        <div className="absolute top-0 left-0 w-full h-section-height -z-1 bg-gradient-to-b from-cyan-100/70"></div>
+        <div className="absolute top-0 left-0 w-full h-section-height -z-1 bg-gradient-to-b from-purple-200/70"></div>
 
         <div className="max-w-xl z-10 text-gray-500">
           <h1 className="md:text-course-deatails-heading-large text-course-deatails-heading-small font-semibold text-gray-800">
@@ -124,7 +124,7 @@ const CourseDetails = () => {
                 />
               ))}
             </div>
-            <p className="text-blue-600">
+            <p className="text-primary">
               ({courseData.courseRatings.length}{" "}
               {courseData.courseRatings.length > 1 ? "ratings" : "rating"})
             </p>
@@ -188,7 +188,7 @@ const CourseDetails = () => {
                                         .pop(),
                                     })
                                   }
-                                  className="text-blue-500 cursor-pointer"
+                                  className="text-primary cursor-pointer"
                                 >
                                   Preview
                                 </p>
@@ -277,7 +277,7 @@ const CourseDetails = () => {
             <button
               type="button"
               onClick={enrollCourse}
-              className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium"
+              className="md:mt-6 mt-4 w-full py-3 rounded bg-primary text-white font-medium"
             >
               {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button>

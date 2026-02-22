@@ -82,7 +82,7 @@ const MyEnrollments = () => {
                                     <span className='text-xs ml-2'>Lectures</span>
                                 </td>
                                 <td className="px-4 py-3 max-sm:text-right">
-                                    <button onClick={() => navigate('/player/' + course._id)} className='px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 max-sm:text-xs text-white'>
+                                    <button onClick={() => navigate('/player/' + course._id)} className='px-3 sm:px-5 py-1.5 sm:py-2 bg-primary max-sm:text-xs text-white'>
                                         {progressArray[index] && progressArray[index].lectureCompleted / progressArray[index].totalLectures === 1 ? 'Completed' : 'On Going'}
                                     </button>
                                 </td>
