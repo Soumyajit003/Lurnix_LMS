@@ -73,7 +73,7 @@ const MyEnrollments = () => {
                                     <img src={course.courseThumbnail} alt="" className="w-14 sm:w-24 md:w-28" />
                                     <div className='flex-1'>
                                         <p className='mb-1 max-sm:text-sm'>{course.courseTitle}</p>
-                                        <Line className='bg-gray-300 rounded-full' strokeWidth={2} percent={progressArray[index] ? (progressArray[index].lectureCompleted * 100) / progressArray[index].totalLectures : 0} />
+                                        <Line className='bg-gray-300 rounded-full' strokeColor="#9810fa" trailColor="" strokeWidth={2} percent={progressArray[index] ? (progressArray[index].lectureCompleted * 100) / progressArray[index].totalLectures : 0} />
                                     </div>
                                 </td>
                                 <td className="px-4 py-3 max-sm:hidden">{calculateCourseDuration(course)}</td>
