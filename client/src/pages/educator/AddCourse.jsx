@@ -153,7 +153,7 @@ const AddCourse = () => {
       <form onSubmit={handleSubmit} className='flex flex-col gap-4 max-w-md w-full text-gray-500'>
         <div className='flex flex-col gap-1'>
           <p>Course Title</p>
-          <input onChange={e => setCourseTitle(e.target.value)} value={courseTitle} type="text" placeholder='Type here' className='outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500' required />
+          <input onChange={e => setCourseTitle(e.target.value)} value={courseTitle} type="text" placeholder='Type here' className='outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500 bg-transparent' required />
         </div>
 
         <div className='flex flex-col gap-1'>
@@ -164,7 +164,7 @@ const AddCourse = () => {
         <div className='flex items-center justify-between flex-wrap'>
           <div className='flex flex-col gap-1'>
             <p>Course Price</p>
-            <input onChange={e => setCoursePrice(e.target.value)} value={coursePrice} type="number" placeholder='0' className='outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500' required />
+            <input onChange={e => setCoursePrice(e.target.value)} value={coursePrice} type="number" placeholder='0' className='outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500 bg-transparent' required />
           </ div>
 
           <div className='flex md:flex-row flex-col items-center gap-3'>
@@ -179,13 +179,13 @@ const AddCourse = () => {
 
         <div className='flex flex-col gap-1'>
           <p>Discount %</p>
-          <input onChange={e => setDiscount(e.target.value)} value={discount} type="number" placeholder='0' min={0} max={100} className='outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500' required />
+          <input onChange={e => setDiscount(e.target.value)} value={discount} type="number" placeholder='0' min={0} max={100} className='outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500 bg-transparent' required />
         </div>
 
         {/* Adding Chapters & Lectures */}
         <div>
           {chapters.map((chapter, chapterIndex) => (
-            <div key={chapterIndex} className="bg-white border rounded-lg mb-4">
+            <div key={chapterIndex} className="bg-transparent border rounded-lg mb-4">
               <div className="flex justify-between items-center p-4 border-b">
                 <div className="flex items-center">
                   <img className={`mr-2 cursor-pointer transition-all ${chapter.collapsed && "-rotate-90"} `} onClick={() => handleChapter('toggle', chapter.chapterId)} src={assets.dropdown_icon} width={14} alt="" />
@@ -202,21 +202,21 @@ const AddCourse = () => {
                       <img onClick={() => handleLecture('remove', chapter.chapterId, lectureIndex)} src={assets.cross_icon} alt="" className='cursor-pointer' />
                     </div>
                   ))}
-                  <div className="inline-flex bg-gray-100 p-2 rounded cursor-pointer mt-2" onClick={() => handleLecture('add', chapter.chapterId)}>
+                  <div className="inline-flex bg-purple-300 text-gray-100 p-2 rounded cursor-pointer mt-2" onClick={() => handleLecture('add', chapter.chapterId)}>
                     + Add Lecture
                   </div>
                 </div>
               )}
             </div>
           ))}
-          <div className="flex justify-center items-center bg-purple-100 p-2 rounded-lg cursor-pointer" onClick={() => handleChapter('add')}>
+          <div className="flex justify-center items-center bg-purple-400 text-gray-100 p-2 rounded-lg cursor-pointer" onClick={() => handleChapter('add')}>
             + Add Chapter
           </div>
 
           {showPopup && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-              <div className="bg-white text-gray-700 p-4 rounded relative w-full max-w-80">
-                <h2 className="text-lg font-semibold mb-4">Add Lecture</h2>
+              <div className="bg-transparent text-gray-700 p-4 rounded relative w-full max-w-80">
+                <h2 className="text-lg font-semibold mb-4 bg-purple-300 text-gray-900">Add Lecture</h2>
                 <div className="mb-2">
                   <p>Lecture Title</p>
                   <input
@@ -259,7 +259,7 @@ const AddCourse = () => {
           )}
         </div>
 
-        <button type="submit" className='bg-black text-white w-max py-2.5 px-8 rounded my-4'>
+        <button type="submit" className='bg-purple-600 hover:bg-purple-500 shadow-lg shadow-purple-600/30 transition-all duration-300 rounded text-white w-max py-2.5 px-8 rounded my-4'>
           ADD
         </button>
       </form>

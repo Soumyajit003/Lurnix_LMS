@@ -95,14 +95,14 @@ const CourseDetails = () => {
   return courseData ? (
     <>
       <div className="flex md:flex-row flex-col-reverse gap-10 relative items-start justify-between md:px-36 px-8 md:pt-20 pt-10 text-left">
-        <div className="absolute top-0 left-0 w-full h-section-height -z-1 bg-gradient-to-b from-purple-200/70"></div>
+        <div className="absolute top-0 left-0 w-full h-section-height -z-1 bg-gradient-to-b from-black/50"></div>
 
-        <div className="max-w-xl z-10 text-gray-500">
-          <h1 className="md:text-course-deatails-heading-large text-course-deatails-heading-small font-semibold text-gray-800">
+        <div className="max-w-xl z-10 text-gray-400">
+          <h1 className="md:text-course-deatails-heading-large text-course-deatails-heading-small font-semibold text-white">
             {courseData.courseTitle}
           </h1>
           <p
-            className="pt-4 md:text-base text-sm"
+            className="pt-4 md:text-white text-sm"
             dangerouslySetInnerHTML={{
               __html: courseData.courseDescription.slice(0, 200),
             }}
@@ -137,13 +137,13 @@ const CourseDetails = () => {
 
           {/* <p className='text-sm'>Course by <span className='text-blue-600 underline'>{courseData.educator.name}</span></p> */}
 
-          <div className="pt-8 text-gray-800">
+          <div className="pt-8 text-gray-200">
             <h2 className="text-xl font-semibold">Course Structure</h2>
             <div className="pt-5">
               {courseData.courseContent.map((chapter, index) => (
                 <div
                   key={index}
-                  className="border border-gray-300 bg-white mb-2 rounded"
+                  className="border border-white/10 bg-transparent/5 backdrop-blur-lg shadow-lg shadow-purple-900/20 mb-2 rounded-xl"
                 >
                   <div
                     className="flex items-center justify-between px-4 py-3 cursor-pointer select-none"
@@ -155,7 +155,7 @@ const CourseDetails = () => {
                         alt="arrow icon"
                         className={`transform transition-transform ${openSections[index] ? "rotate-180" : ""}`}
                       />
-                      <p className="font-medium md:text-base text-sm">
+                      <p className="font-medium md:text-white text-sm">
                         {chapter.chapterTitle}
                       </p>
                     </div>
@@ -176,7 +176,7 @@ const CourseDetails = () => {
                             alt="bullet icon"
                             className="w-4 h-4 mt-1"
                           />
-                          <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
+                          <div className="flex items-center justify-between w-full text-gray-200 text-xs md:text-default">
                             <p>{lecture.lectureTitle}</p>
                             <div className="flex gap-2">
                               {lecture.isPreviewFree && (
@@ -211,7 +211,7 @@ const CourseDetails = () => {
           </div>
 
           <div className="py-20 text-sm md:text-default">
-            <h3 className="text-xl font-semibold text-gray-800">
+            <h3 className="text-xl font-semibold text-gray-200">
               Course Description
             </h3>
             <p
@@ -221,7 +221,7 @@ const CourseDetails = () => {
           </div>
         </div>
 
-        <div className="max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]">
+        <div className="max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-purple-900/30 min-w-[300px] sm:min-w-[420px]">
           {playerData ? (
             <YouTube
               videoId={playerData.videoId}
@@ -243,7 +243,7 @@ const CourseDetails = () => {
               </p>
             </div>
             <div className="flex gap-3 items-center pt-2">
-              <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
+              <p className="text-gray-200 md:text-4xl text-2xl font-semibold">
                 {currency}
                 {(
                   courseData.coursePrice -
@@ -282,7 +282,7 @@ const CourseDetails = () => {
               {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button>
             <div className="pt-6">
-              <p className="md:text-xl text-lg font-medium text-gray-800">
+              <p className="md:text-xl text-lg font-medium text-gray-200">
                 What's in the course?
               </p>
               <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">

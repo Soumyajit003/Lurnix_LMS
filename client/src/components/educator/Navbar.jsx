@@ -10,11 +10,11 @@ const Navbar = ({ bgColor }) => {
   const { user } = useUser()
 
   return isEducator && user && (
-    <div className={`flex items-center justify-between px-4 md:px-8 border-b border-gray-500 py-3 ${bgColor}`}>
+    <div className={`flex items-center justify-between px-4 md:px-8 border-b border-white/10 py-3 bg-black/40 backdrop-blur-md ${bgColor}`}>
       <Link to="/">
         <img src={assets.logo} alt="Logo" className="w-28 lg:w-32" />
       </Link>
-      <div className="flex items-center gap-5 text-gray-500 relative">
+      <div className="flex items-center gap-5 text-gray-300 relative">
         <p>Hi! {user.fullName}</p>
         <UserButton />
       </div>

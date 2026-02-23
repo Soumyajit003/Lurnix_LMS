@@ -37,12 +37,12 @@ const CoursesList = () => {
             <div className="relative md:px-36 px-8 pt-20 text-left">
                 <div className='flex md:flex-row flex-col gap-6 items-start justify-between w-full'>
                     <div>
-                        <h1 className='text-4xl font-semibold text-gray-800'>Course List</h1>
+                        <h1 className='text-4xl font-semibold text-gray-200'>Course List</h1>
                         <p className='text-gray-500'><span onClick={() => navigate('/')} className='text-primary cursor-pointer'>Home</span> / <span>Course List</span></p>
                     </div>
                     <SearchBar data={input} />
                 </div>
-                {input && <div className='inline-flex items-center gap-4 px-4 py-2 border mt-8 -mb-8 text-gray-600'>
+                {input && <div className='inline-flex items-center gap-4 px-4 py-2 border rounded-lg mt-8 -mb-8 text-gray-300'>
                     <p>{input}</p>
                     <img onClick={() => navigate('/course-list')} className='cursor-pointer' src={assets.cross_icon} alt="" />
                 </div>}

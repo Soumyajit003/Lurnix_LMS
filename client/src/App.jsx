@@ -21,7 +21,7 @@ const App = () => {
   const isEducatorRoute = useMatch('/educator/*');
 
   return (
-    <div className="text-default min-h-screen bg-white">
+    <div className="text-default min-h-screen bg-gradient-to-br from-black via-[#0f0524] to-[#2B0F5A] bg-[length:200%_200%]">
       <ToastContainer />
       {/* Render Student Navbar only if not on educator routes */}
       {!isEducatorRoute && <Navbar />}
