@@ -70,7 +70,7 @@ const CommunityPage = () => {
                 <div className="flex flex-col gap-6 mb-20">
                     {posts.length > 0 ? (
                         posts.map((post) => (
-                            <PostCard key={post._id} post={post} />
+                            <PostCard key={post._id} post={post} onDelete={fetchPosts} />
                         ))
                     ) : (
                         <div className="text-center py-20 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl">

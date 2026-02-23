@@ -6,10 +6,10 @@ export default {
   ],
   theme: {
     extend: {
-      colors:{
-        'primary':'#9810fa'
+      colors: {
+        'primary': '#9810fa'
       },
-      gridTemplateColumns:{
+      gridTemplateColumns: {
         'auto': 'repeat(auto-fit, minmax(200px, 1fr))'
       },
       spacing: {
@@ -28,7 +28,31 @@ export default {
       boxShadow: {
         'custom-card': '0px 4px 15px 2px rgba(0, 0, 0, 0.1)',
       },
-    },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
+        fadeOut: {
+          "0%": { opacity: 1 },
+          "100%": { opacity: 0 },
+        },
+        zoomIn: {
+          "0%": { opacity: 0, transform: "scale(0.95)" },
+          "100%": { opacity: 1, transform: "scale(1)" },
+        },
+        zoomOut: {
+          "0%": { opacity: 1, transform: "scale(1)" },
+          "100%": { opacity: 0, transform: "scale(0.95)" },
+        },
+      },
+      animation: {
+        fadeIn: "fadeIn 0.2s ease-out forwards",
+        fadeOut: "fadeOut 0.2s ease-in forwards",
+        zoomIn: "zoomIn 0.2s ease-out forwards",
+        zoomOut: "zoomOut 0.2s ease-in forwards",
+      },
   },
-  plugins: [],
+},
+plugins: [],
 }

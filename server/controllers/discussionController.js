@@ -115,4 +115,58 @@ export const seedCommunities = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+// Delete a post
+export const deletePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.auth.userId;
 
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.json({ success: false, message: "Post not found" });
+        }
+
+        // Check if the user is the author
+        if (post.author !== userId) {
+            return res.status(403).json({ success: false, message: "Unauthorized to delete this post" });
+        }
+
+        // Delete all comments associated with the post
+        await Comment.deleteMany({ post: postId });
+
+        // Delete the post
+        await Post.findByIdAndDelete(postId);
+
+        res.json({ success: true, message: "Post deleted successfully" });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// Delete a comment
+export const deleteComment = async (req, res) => {
+    try {
+        const { commentId } = req.params;
+        const userId = req.auth.userId;
+
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.json({ success: false, message: "Comment not found" });
+        }
+
+        // Check if the user is the author
+        if (comment.author !== userId) {
+            return res.status(403).json({ success: false, message: "Unauthorized to delete this comment" });
+        }
+
+        // Delete the comment
+        await Comment.findByIdAndDelete(commentId);
+
+        // Decrement comment count in post safely
+        await Post.findByIdAndUpdate(comment.post, { $inc: { commentsCount: -1 } });
+
+        res.json({ success: true, message: "Comment deleted successfully" });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
