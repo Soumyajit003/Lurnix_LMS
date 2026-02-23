@@ -4,6 +4,7 @@ import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
 import moment from 'moment';
 import CommentSection from '../../components/student/CommentSection';
+import Loading from '../../components/student/Loading';
 
 const PostDetailsPage = () => {
     const { postId } = useParams();
@@ -31,7 +32,7 @@ const PostDetailsPage = () => {
     }, [postId]);
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center text-white">Loading Post...</div>;
+        return <Loading />
     }
 
     if (!post) {

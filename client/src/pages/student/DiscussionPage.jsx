@@ -3,6 +3,7 @@ import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Footer from '../../components/student/Footer';
+import Loading from '../../components/student/Loading';
 
 const DiscussionPage = () => {
     const { backendUrl } = useContext(AppContext);
@@ -36,7 +37,7 @@ const DiscussionPage = () => {
     }, []);
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center text-white">Loading Communities...</div>;
+        return <Loading />
     }
 
     return (

@@ -5,6 +5,7 @@ import { useUser } from '@clerk/clerk-react';
 import axios from 'axios';
 import PostCard from '../../components/student/PostCard';
 import CreatePostModal from '../../components/student/CreatePostModal';
+import Loading from '../../components/student/Loading';
 
 const CommunityPage = () => {
     const { slug } = useParams();
@@ -34,7 +35,7 @@ const CommunityPage = () => {
     }, [slug]);
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+        return <Loading />
     }
 
     if (!community) {
