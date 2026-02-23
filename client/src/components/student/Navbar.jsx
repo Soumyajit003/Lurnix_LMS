@@ -6,13 +6,15 @@ import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
+
 const Navbar = () => {
 
   const location = useLocation();
 
   const isCoursesListPage = location.pathname.includes('/course-list');
 
-  const { backendUrl, isEducator, setIsEducator, navigate, getToken } = useContext(AppContext)
+  const { backendUrl, isEducator, setIsEducator, navigate, getToken, showRoleModal, setShowRoleModal, userData } = useContext(AppContext)
+
 
   const { openSignIn } = useClerk()
   const { user } = useUser()
@@ -47,30 +49,38 @@ const Navbar = () => {
         <div className="flex items-center gap-5">
           {
             user && <>
-              <button onClick={becomeEducator}>{isEducator ? 'Educator Dashboard' : 'Become Educator'}</button>
+              {isEducator && <button onClick={() => navigate('/educator')}>Educator Dashboard</button>}
+
               | <Link to='/my-enrollments' >My Enrollments</Link>
             </>
           }
+          <Link to='/discussion'>Discussion</Link>
         </div>
+
         {user
           ? <UserButton />
-          : <button onClick={() => openSignIn()} className="bg-primary text-white px-5 py-2 rounded-full">
+          : <button onClick={() => setShowRoleModal(true)} className="bg-primary text-white px-5 py-2 rounded-full">
             Create Account
           </button>}
       </div>
+
       {/* For Phone Screens */}
       <div className='md:hidden flex items-center gap-2 sm:gap-5 text-gray-300'>
         <div className="flex items-center gap-1 sm:gap-2 max-sm:text-xs">
-          <button onClick={becomeEducator}>{isEducator ? 'Educator Dashboard' : 'Become Educator'}</button>
-          | {
+          {isEducator && <button onClick={() => navigate('/educator')}>Educator Dashboard</button>}
+          {isEducator && <span>|</span>}
+
+          {
             user && <Link to='/my-enrollments' >My Enrollments</Link>
           }
         </div>
+
         {user
           ? <UserButton />
-          : <button onClick={() => openSignIn()}>
+          : <button onClick={() => setShowRoleModal(true)}>
             <img src={assets.user_icon} alt="" />
           </button>}
+
       </div>
     </div>
   );
