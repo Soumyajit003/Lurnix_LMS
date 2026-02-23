@@ -102,7 +102,7 @@ const CourseDetails = () => {
             {courseData.courseTitle}
           </h1>
           <p
-            className="pt-4 md:text-white text-sm"
+            className="pt-4 md:text-gray-400 text-sm"
             dangerouslySetInnerHTML={{
               __html: courseData.courseDescription.slice(0, 200),
             }}
@@ -215,7 +215,7 @@ const CourseDetails = () => {
               Course Description
             </h3>
             <p
-              className="rich-text pt-3"
+              className="text-gray-400 pt-3 "
               dangerouslySetInnerHTML={{ __html: courseData.courseDescription }}
             ></p>
           </div>
@@ -250,15 +250,15 @@ const CourseDetails = () => {
                   (courseData.discount * courseData.coursePrice) / 100
                 ).toFixed(2)}
               </p>
-              <p className="md:text-lg text-gray-500 line-through">
+              <p className="md:text-lg text-gray-400 line-through">
                 {currency}
                 {courseData.coursePrice}
               </p>
-              <p className="md:text-lg text-gray-500">
+              <p className="md:text-lg text-gray-400">
                 {courseData.discount}% off
               </p>
             </div>
-            <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-500">
+            <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-300">
               <div className="flex items-center gap-1">
                 <img src={assets.star} alt="star icon" />
                 <p>{calculateRating(courseData)}</p>
@@ -285,7 +285,7 @@ const CourseDetails = () => {
               <p className="md:text-xl text-lg font-medium text-gray-200">
                 What's in the course?
               </p>
-              <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
+              <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-400">
                 <li>Lifetime access with free updates.</li>
                 <li>Step-by-step, hands-on project guidance.</li>
                 <li>Downloadable resources and source code.</li>
