@@ -39,8 +39,9 @@ const PostDetailsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-transparent text-white pt-10">
+        <div className="min-h-screen bg-transparent text-white pt-10 pb-20">
             <div className="px-4 sm:px-10 md:px-14 lg:px-36">
+
                 <Link
                     to={`/discussion/${post.community.slug}`}
                     className="text-purple-400 hover:text-purple-300 mb-6 inline-block flex items-center"

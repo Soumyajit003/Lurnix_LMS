@@ -42,8 +42,9 @@ const CommunityPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-transparent text-white pt-10">
+        <div className="min-h-screen bg-transparent text-white pt-10 pb-20">
             <div className="px-4 sm:px-10 md:px-14 lg:px-36">
+
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
                     <div>
                         <Link to="/discussion" className="text-purple-400 hover:text-purple-300 mb-4 inline-block flex items-center">
