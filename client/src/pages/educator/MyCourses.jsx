@@ -46,7 +46,7 @@ const MyCourses = () => {
                 <th className="px-4 py-3 font-semibold truncate">Published On</th>
               </tr>
             </thead>
-            <tbody className="text-sm text-gray-500">
+            <tbody className="text-sm text-gray-400">
               {courses.map((course) => (
                 <tr key={course._id} className="border-b border-gray-500/20">
                   <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">

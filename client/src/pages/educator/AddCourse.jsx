@@ -150,7 +150,7 @@ const AddCourse = () => {
 
   return (
     <div className='h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4 max-w-md w-full text-gray-500'>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4 max-w-md w-full text-gray-400'>
         <div className='flex flex-col gap-1'>
           <p>Course Title</p>
           <input onChange={e => setCourseTitle(e.target.value)} value={courseTitle} type="text" placeholder='Type here' className='outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500 bg-transparent' required />
@@ -191,7 +191,7 @@ const AddCourse = () => {
                   <img className={`mr-2 cursor-pointer transition-all ${chapter.collapsed && "-rotate-90"} `} onClick={() => handleChapter('toggle', chapter.chapterId)} src={assets.dropdown_icon} width={14} alt="" />
                   <span className="font-semibold">{chapterIndex + 1} {chapter.chapterTitle}</span>
                 </div>
-                <span className="text-gray-500">{chapter.chapterContent.length} Lectures</span>
+                <span className="text-gray-400">{chapter.chapterContent.length} Lectures</span>
                 <img onClick={() => handleChapter('remove', chapter.chapterId)} src={assets.cross_icon} alt="" className='cursor-pointer' />
               </div>
               {!chapter.collapsed && (

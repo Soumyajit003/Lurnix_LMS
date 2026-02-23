@@ -93,21 +93,21 @@ const Dashboard = () => {
             <img src={assets.patients_icon} alt="patients_icon" />
             <div>
               <p className='text-2xl font-medium text-gray-600'>{dashboardData.enrolledStudentsData.length}</p>
-              <p className='text-white text-gray-500'>Total Enrolments</p>
+              <p className='text-white text-gray-400'>Total Enrolments</p>
             </div>
           </div>
           <div className='flex items-center gap-3 shadow-card border border-primary p-4 w-56 rounded-md'>
             <img src={assets.appointments_icon} alt="patients_icon" />
             <div>
               <p className='text-2xl font-medium text-gray-600'>{dashboardData.totalCourses}</p>
-              <p className='text-white text-gray-500'>Total Courses</p>
+              <p className='text-white text-gray-400'>Total Courses</p>
             </div>
           </div>
           <div className='flex items-center gap-3 shadow-card border border-primary p-4 w-56 rounded-md'>
             <img src={assets.earning_icon} alt="patients_icon" />
             <div>
               <p className='text-2xl font-medium text-gray-600'>{currency}{Math.floor(dashboardData.totalEarnings)}</p>
-              <p className='text-white text-gray-500'>Total Earnings</p>
+              <p className='text-white text-gray-400'>Total Earnings</p>
             </div>
           </div>
         </div>
@@ -122,7 +122,7 @@ const Dashboard = () => {
                   <th className="px-4 py-3 font-semibold">Course Title</th>
                 </tr>
               </thead>
-              <tbody className="text-sm text-gray-500">
+              <tbody className="text-sm text-gray-400">
                 {dashboardData.enrolledStudentsData.map((item, index) => (
                   <tr key={index} className="border-b border-gray-500/20">
                     <td className="px-4 py-3 text-center hidden sm:table-cell">{index + 1}</td>

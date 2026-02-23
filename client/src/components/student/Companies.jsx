@@ -4,7 +4,7 @@ import { assets } from '../../assets/assets';
 const Companies = () => {
   return (
     <div className="py-16">
-      <p className="text-white">Trusted by learners from</p>
+      <p className="text-white md:text-4xl text-xl">Trusted by learners from</p>
       <div className="flex flex-wrap items-center justify-center gap-6 md:gap-16 md:mt-10 mt-5">
         <img className='md:w-28 w-20' src={assets.microsoft_logo} alt="Microsoft" />
         <img className='md:w-28 w-20' src={assets.walmart_logo} alt="Walmart" />
