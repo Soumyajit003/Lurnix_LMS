@@ -3,38 +3,19 @@ import { CourseProgress } from "../models/CourseProgress.js"
 import { Purchase } from "../models/Purchase.js"
 import User from "../models/User.js"
 import stripe from "stripe"
-import { clerkClient } from "@clerk/express"
+
 
 
 // Get User Data
 export const getUserData = async (req, res) => {
     try {
-        if (!req.auth || !req.auth.userId) {
-            return res.json({ success: false, message: "Unauthorized. Please log in again." });
-        }
 
         const userId = req.auth.userId
-        let user = await User.findById(userId)
 
-        // Fallback: If user not found in DB OR missing 'type', fetch from Clerk and create/update
-        if (!user || user.role !== (user.type || user.role)) {
+        const user = await User.findById(userId)
 
-            // Auto-sync: If user not found in DB, fetch from Clerk and create
-            try {
-                const clerkUser = await clerkClient.users.getUser(userId);
-                const role = clerkUser.unsafeMetadata?.role || clerkUser.publicMetadata?.role || 'student';
-                
-                user = await User.create({
-                    _id: userId,
-                    name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
-                    email: clerkUser.emailAddresses[0].emailAddress,
-                    imageUrl: clerkUser.imageUrl,
-                    role: role,
-                    type: role
-                });
-            } catch (clerkError) {
-                return res.json({ success: false, message: 'User Not Found in Database or Clerk' })
-            }
+        if (!user) {
+            return res.json({ success: false, message: 'User Not Found' })
         }
 
         res.json({ success: true, user })
@@ -43,7 +24,6 @@ export const getUserData = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
-
 
 // export const getUserData = async (req, res) => {
 //   try {

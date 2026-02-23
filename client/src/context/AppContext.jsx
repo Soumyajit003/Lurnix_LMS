@@ -17,12 +17,10 @@ export const AppContextProvider = (props) => {
     const { user } = useUser()
 
     const [showLogin, setShowLogin] = useState(false)
-    const [showRoleModal, setShowRoleModal] = useState(false)
     const [isEducator, setIsEducator] = useState(false)
     const [allCourses, setAllCourses] = useState([])
     const [userData, setUserData] = useState(null)
     const [enrolledCourses, setEnrolledCourses] = useState([])
-
 
     // Fetch All Courses
     const fetchAllCourses = async () => {
@@ -76,10 +74,9 @@ export const AppContextProvider = (props) => {
 
             if (!user) return; // prevent crash
 
-            if (user?.publicMetadata?.role === 'educator' || user?.unsafeMetadata?.role === 'educator') {
+            if (user?.publicMetadata?.role === 'educator') {
                 setIsEducator(true)
             }
-
 
             const token = await getToken();
             if (!token) return; // prevent null token issue
@@ -93,13 +90,9 @@ export const AppContextProvider = (props) => {
 
             if (data.success) {
                 setUserData(data.user)
-                if (data.user.role === 'educator') {
-                    setIsEducator(true)
-                }
             } else {
                 toast.error(data.message)
             }
-
 
         } catch (error) {
             toast.error(error.response?.data?.message || error.message)
@@ -195,9 +188,7 @@ export const AppContextProvider = (props) => {
         calculateChapterTime, calculateCourseDuration,
         calculateRating, calculateNoOfLectures,
         isEducator, setIsEducator,
-        showRoleModal, setShowRoleModal,
     }
-
 
     return (
         <AppContext.Provider value={value}>

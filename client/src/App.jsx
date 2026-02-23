@@ -1,8 +1,6 @@
 import React, { useContext } from 'react'
 import { Routes, Route, useLocation, useMatch } from 'react-router-dom'
 import Navbar from './components/student/Navbar'
-import { AppContext } from './context/AppContext'
-
 import Home from './pages/student/Home'
 import CourseDetails from './pages/student/CourseDetails'
 import CoursesList from './pages/student/CoursesList'
@@ -20,11 +18,9 @@ import Loading from './components/student/Loading'
 import DiscussionPage from './pages/student/DiscussionPage'
 import CommunityPage from './pages/student/CommunityPage'
 import PostDetailsPage from './pages/student/PostDetailsPage'
-import RoleSelectionModal from './components/student/RoleSelectionModal'
 
 const App = () => {
 
-  const { showRoleModal, setShowRoleModal } = useContext(AppContext)
   const isEducatorRoute = useMatch('/educator/*');
 
   return (
@@ -50,9 +46,7 @@ const App = () => {
           <Route path='student-enrolled' element={<StudentsEnrolled />} />
         </Route>
       </Routes>
-      <RoleSelectionModal isOpen={showRoleModal} onClose={() => setShowRoleModal(false)} />
     </div>
-
   )
 }
 
