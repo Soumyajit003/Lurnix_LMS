@@ -202,50 +202,50 @@ const AddCourse = () => {
                       <img onClick={() => handleLecture('remove', chapter.chapterId, lectureIndex)} src={assets.cross_icon} alt="" className='cursor-pointer' />
                     </div>
                   ))}
-                  <div className="inline-flex bg-purple-300 text-gray-100 p-2 rounded cursor-pointer mt-2" onClick={() => handleLecture('add', chapter.chapterId)}>
+                  <div className="inline-flex bg-purple-600 text-gray-100 p-2 rounded cursor-pointer mt-2" onClick={() => handleLecture('add', chapter.chapterId)}>
                     + Add Lecture
                   </div>
                 </div>
               )}
             </div>
           ))}
-          <div className="flex justify-center items-center bg-purple-400 text-gray-100 p-2 rounded-lg cursor-pointer" onClick={() => handleChapter('add')}>
+          <div className="flex justify-center items-center bg-purple-600 text-gray-100 p-2 rounded-lg cursor-pointer" onClick={() => handleChapter('add')}>
             + Add Chapter
           </div>
 
           {showPopup && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-              <div className="bg-transparent text-gray-700 p-4 rounded relative w-full max-w-80">
-                <h2 className="text-lg font-semibold mb-4 bg-purple-300 text-gray-900">Add Lecture</h2>
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+              <div className="bg-purple-950/90 text-gray-700 p-4 rounded relative w-full max-w-80">
+                <h2 className="text-lg font-semibold mb-4 bg-transparent text-gray-100">Add Lecture</h2>
                 <div className="mb-2">
-                  <p>Lecture Title</p>
+                  <p className='text-gray-300'>Lecture Title</p>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-1 px-2"
+                    className="mt-1 block w-full border rounded py-1 px-2 bg-transparent text-gray-400"
                     value={lectureDetails.lectureTitle}
                     onChange={(e) => setLectureDetails({ ...lectureDetails, lectureTitle: e.target.value })}
                   />
                 </div>
                 <div className="mb-2">
-                  <p>Duration (minutes)</p>
+                  <p className='text-gray-300'>Duration (minutes)</p>
                   <input
                     type="number"
-                    className="mt-1 block w-full border rounded py-1 px-2"
+                    className="mt-1 block w-full border rounded py-1 px-2 bg-transparent text-gray-400"
                     value={lectureDetails.lectureDuration}
                     onChange={(e) => setLectureDetails({ ...lectureDetails, lectureDuration: e.target.value })}
                   />
                 </div>
                 <div className="mb-2">
-                  <p>Lecture URL</p>
+                  <p className='text-gray-300'>Lecture URL</p>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-1 px-2"
+                    className="mt-1 block w-full border rounded py-1 px-2 bg-transparent text-gray-400"
                     value={lectureDetails.lectureUrl}
                     onChange={(e) => setLectureDetails({ ...lectureDetails, lectureUrl: e.target.value })}
                   />
                 </div>
                 <div className="flex gap-2 my-4">
-                  <p>Is Preview Free?</p>
+                  <p className='text-gray-300'>Is Preview Free?</p>
                   <input
                     type="checkbox" className='mt-1 scale-125'
                     checked={lectureDetails.isPreviewFree}
