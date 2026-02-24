@@ -18,6 +18,7 @@ import Loading from './components/student/Loading'
 import DiscussionPage from './pages/student/DiscussionPage'
 import CommunityPage from './pages/student/CommunityPage'
 import PostDetailsPage from './pages/student/PostDetailsPage'
+import ComingSoon from './pages/student/ComingSoon'
 
 const App = () => {
 
@@ -40,6 +41,11 @@ const App = () => {
         <Route path="/discussion" element={<DiscussionPage />} />
         <Route path="/discussion/:slug" element={<CommunityPage />} />
         <Route path="/discussion/post/:postId" element={<PostDetailsPage />} />
+
+        {/* AI Features Coming Soon */}
+        <Route path="/ai-quiz" element={<ComingSoon featureName="AI Quiz Generator" />} />
+        <Route path="/ai-roadmap" element={<ComingSoon featureName="AI Career Roadmap" />} />
+        <Route path="/ai-resume" element={<ComingSoon featureName="AI Resume Review" />} />
         <Route path='/educator' element={<Educator />}>
           <Route path='/educator' element={<Dashboard />} />
           <Route path='add-course' element={<AddCourse />} />
