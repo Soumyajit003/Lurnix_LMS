@@ -218,8 +218,8 @@ const Navbar = () => {
           <UserButton />
         ) : (
           <div className='flex items-center gap-5'>
-            <button onClick={() => openSignIn()} className="hover:text-white transition-colors font-medium">Login</button>
-            <button onClick={() => openSignUp()} className="bg-primary text-white px-6 py-2 rounded-full hover:bg-primary/90 transition-colors font-medium">Sign Up</button>
+            <button onClick={() => openSignIn()} className=" transition-colors font-medium text-white px-6 py-2 rounded-full border border-primary hover:bg-primary/20">Login</button>
+            <button onClick={() => openSignUp()} className="bg-primary text-white px-6 py-2 rounded-full hover:bg-primary transition-colors font-medium">Sign Up</button>
           </div>
         )}
       </div>
@@ -342,7 +342,7 @@ const Navbar = () => {
           <UserButton />
         ) : (
           <div className='flex items-center gap-2'>
-            <button onClick={() => openSignIn()} className='text-gray-400 font-medium text-sm px-2'>Login</button>
+            <button onClick={() => openSignIn()} className='text-gray-200 rounded-full text-xs font-semibold px-4 py-1.5 border border-primary bg-transparent'>Login</button>
             <button onClick={() => openSignUp()} className='bg-primary text-white px-4 py-1.5 rounded-full text-xs font-semibold'>Sign Up</button>
           </div>
         )}
