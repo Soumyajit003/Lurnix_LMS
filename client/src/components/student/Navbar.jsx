@@ -21,6 +21,8 @@ const Navbar = () => {
   const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [moreVisible, setMoreVisible] = useState(false);
+  const [mobileAiVisible, setMobileAiVisible] = useState(false);
 
   const aiRef = useRef(null);
   const moreRef = useRef(null);
@@ -47,6 +49,35 @@ const Navbar = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const [aiVisible, setAiVisible] = useState(false);
+
+  useEffect(() => {
+    if (aiDropdownOpen) {
+      setAiVisible(true);
+    } else {
+      const timeout = setTimeout(() => setAiVisible(false), 200);
+      return () => clearTimeout(timeout);
+    }
+  }, [aiDropdownOpen]);
+
+  useEffect(() => {
+    if (moreDropdownOpen) {
+      setMoreVisible(true);
+    } else {
+      const timeout = setTimeout(() => setMoreVisible(false), 200);
+      return () => clearTimeout(timeout);
+    }
+  }, [moreDropdownOpen]);
+
+  useEffect(() => {
+    if (aiDropdownOpen) {
+      setMobileAiVisible(true);
+    } else {
+      const timeout = setTimeout(() => setMobileAiVisible(false), 200);
+      return () => clearTimeout(timeout);
+    }
+  }, [aiDropdownOpen]);
 
   const becomeEducator = async () => {
     console.log('becomeEducator called, isEducator:', isEducator);
@@ -112,11 +143,27 @@ const Navbar = () => {
                   <img src={assets.dropdown_icon} alt="" className={`w-2.5 transition-transform ${aiDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {aiDropdownOpen && (
-                  <div className="absolute top-10 left-0 w-52 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg p-2 z-50 animate-zoomIn">
-                    <Link to="/ai-quiz" className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">AI Quiz Generator</Link>
-                    <Link to="/ai-roadmap" className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">AI Career Roadmap</Link>
-                    <Link to="/ai-resume" className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">AI Resume Review</Link>
+                {aiVisible && (
+                  <div
+                    className={`absolute top-10 left-0 w-52 
+                      bg-purple-900/30 
+                      backdrop-blur-md 
+                      border border-white/10 
+                      rounded-xl 
+                      shadow-lg 
+                      p-2 
+                      z-50 
+                      ${aiDropdownOpen ? "animate-zoomIn" : "animate-zoomOut"}`}
+                  >
+                    <Link to="/ai-quiz" className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                      AI Quiz Generator
+                    </Link>
+                    <Link to="/ai-roadmap" className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                      AI Career Roadmap
+                    </Link>
+                    <Link to="/ai-resume" className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                      AI Resume Review
+                    </Link>
                   </div>
                 )}
               </div>
@@ -131,8 +178,18 @@ const Navbar = () => {
                   <img src={assets.dropdown_icon} alt="" className={`w-2.5 transition-transform ${moreDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {moreDropdownOpen && (
-                  <div className="absolute top-10 right-0 w-48 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg p-2 z-50 animate-zoomIn">
+                {moreVisible && (
+                  <div
+                    className={`absolute top-10 right-0 w-48 
+                  bg-purple-900/30 
+                  backdrop-blur-md 
+                  border border-white/10 
+                  rounded-xl 
+                  shadow-lg 
+                  p-2 
+                  z-[9999]
+                  ${moreDropdownOpen ? "animate-zoomIn" : "animate-zoomOut"}`}
+                  >
                     {role === 'student' ? (
                       <button
                         onClick={becomeEducator}
@@ -141,7 +198,12 @@ const Navbar = () => {
                         Become Educator
                       </button>
                     ) : (
-                      <Link to="/my-enrollments" className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">My Enrollments</Link>
+                      <Link
+                        to="/my-enrollments"
+                        className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors"
+                      >
+                        My Enrollments
+                      </Link>
                     )}
                   </div>
                 )}
@@ -194,11 +256,38 @@ const Navbar = () => {
                   <img src={assets.dropdown_icon} alt="" className={`w-2 transition-transform ${aiDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {aiDropdownOpen && (
-                  <div className="absolute top-8 left-[-80px] w-44 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg p-1.5 z-50 animate-zoomIn">
-                    <Link to="/ai-quiz" className="block px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-[12px]">AI Quiz</Link>
-                    <Link to="/ai-roadmap" className="block px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-[12px]">AI Roadmap</Link>
-                    <Link to="/ai-resume" className="block px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-[12px]">AI Resume</Link>
+                {mobileAiVisible && (
+                  <div
+                    className={`absolute top-8 left-[-80px] w-44 
+                    bg-purple-900/30 
+                    backdrop-blur-md 
+                    border border-white/10 
+                    rounded-xl 
+                    shadow-xl shadow-black/30 
+                    p-1.5 
+                    z-[9999] 
+                    ${aiDropdownOpen ? "animate-zoomIn" : "animate-zoomOut"}`}
+                  >
+                    <Link
+                      to="/ai-quiz"
+                      className="block px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-[12px]"
+                    >
+                      AI Quiz
+                    </Link>
+
+                    <Link
+                      to="/ai-roadmap"
+                      className="block px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-[12px]"
+                    >
+                      AI Roadmap
+                    </Link>
+
+                    <Link
+                      to="/ai-resume"
+                      className="block px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-[12px]"
+                    >
+                      AI Resume
+                    </Link>
                   </div>
                 )}
               </div>
@@ -213,17 +302,32 @@ const Navbar = () => {
                   <img src={assets.dropdown_icon} alt="" className={`w-2 transition-transform ${moreDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {moreDropdownOpen && (
-                  <div className="absolute top-8 right-0 w-36 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg p-1.5 z-50 animate-zoomIn">
+                {moreVisible && (
+                  <div
+                    className={`absolute top-10 right-0 w-48 
+                  bg-purple-900/30 
+                  backdrop-blur-md 
+                  border border-white/10 
+                  rounded-xl 
+                  shadow-lg 
+                  p-2 
+                  z-[9999]
+                  ${moreDropdownOpen ? "animate-zoomIn" : "animate-zoomOut"}`}
+                  >
                     {role === 'student' ? (
                       <button
                         onClick={becomeEducator}
-                        className="w-full text-left px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-purple-400 text-[12px]"
+                        className="w-full text-left px-4 py-2 hover:bg-white/10 rounded-lg transition-colors text-purple-400"
                       >
                         Become Educator
                       </button>
                     ) : (
-                      <Link to="/my-enrollments" className="block px-3 py-1.5 hover:bg-white/10 rounded-lg transition-colors text-[12px]">My Enrollments</Link>
+                      <Link
+                        to="/my-enrollments"
+                        className="block px-4 py-2 hover:bg-white/10 rounded-lg transition-colors"
+                      >
+                        My Enrollments
+                      </Link>
                     )}
                   </div>
                 )}
