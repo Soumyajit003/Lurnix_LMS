@@ -9,6 +9,7 @@ import { clerkWebhooks, stripeWebhooks } from './controllers/webhooks.js'
 import educatorRouter from './routes/educatorRoutes.js'
 import courseRouter from './routes/courseRoute.js'
 import discussionRouter from './routes/discussionRoutes.js'
+import aiRouter from './routes/aiRoutes.js'
 
 // Initialize Express
 const app = express()
@@ -23,12 +24,13 @@ app.use(clerkMiddleware())
 
 // Routes
 app.get('/', (req, res) => res.send("API Working"))
-app.post('/clerk', express.json() , clerkWebhooks)
+app.post('/clerk', express.json(), clerkWebhooks)
 app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks)
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.use('/api/user', express.json(), userRouter)
 app.use('/api/discussion', express.json(), discussionRouter)
+app.use('/api/ai', express.json(), aiRouter)
 
 // Port
 const PORT = process.env.PORT || 5000

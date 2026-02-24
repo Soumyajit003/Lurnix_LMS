@@ -19,17 +19,19 @@ import DiscussionPage from './pages/student/DiscussionPage'
 import CommunityPage from './pages/student/CommunityPage'
 import PostDetailsPage from './pages/student/PostDetailsPage'
 import ComingSoon from './pages/student/ComingSoon'
+import AiQuiz from './pages/student/AiQuiz'
 
 const App = () => {
 
   const isEducatorRoute = useMatch('/educator/*');
+  const isActiveQuizRoute = useMatch('/ai-quiz/take/:quizId');
 
   return (
     <div className="text-default min-h-screen bg-gradient-to-br from-black via-[#0f0524] to-[#2B0F5A] bg-[length:200%_200%] bg-fixed">
 
       <ToastContainer />
-      {/* Render Student Navbar only if not on educator routes */}
-      {!isEducatorRoute && <Navbar />}
+      {/* Render Student Navbar only if not on educator routes or active quiz */}
+      {!isEducatorRoute && !isActiveQuizRoute && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/course/:id" element={<CourseDetails />} />
@@ -42,8 +44,10 @@ const App = () => {
         <Route path="/discussion/:slug" element={<CommunityPage />} />
         <Route path="/discussion/post/:postId" element={<PostDetailsPage />} />
 
-        {/* AI Features Coming Soon */}
-        <Route path="/ai-quiz" element={<ComingSoon featureName="AI Quiz Generator" />} />
+        {/* AI Features */}
+        <Route path="/ai-quiz" element={<AiQuiz />} />
+        <Route path="/ai-quiz/take/:quizId" element={<AiQuiz />} />
+        <Route path="/ai-quiz/view/:quizId" element={<AiQuiz />} />
         <Route path="/ai-roadmap" element={<ComingSoon featureName="AI Career Roadmap" />} />
         <Route path="/ai-resume" element={<ComingSoon featureName="AI Resume Review" />} />
         <Route path='/educator' element={<Educator />}>
