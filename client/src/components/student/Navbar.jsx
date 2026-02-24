@@ -62,11 +62,12 @@ const Navbar = () => {
       </div>
       {/* For Phone Screens */}
       <div className='md:hidden flex items-center gap-2 sm:gap-5 text-gray-300'>
-        <div className="flex items-center gap-1 sm:gap-2 max-sm:text-xs">
-          <button onClick={becomeEducator}>{isEducator ? 'Educator Dashboard' : 'Become Educator'}</button>
+        <div className="flex items-center gap-1 sm:gap-2 max-sm:text-[11px]">
+          <button className='text-purple-400' onClick={becomeEducator}>{isEducator ? 'Educator Dashboard' : 'Become Educator'}</button>
           | {
             user && <Link to='/my-enrollments' >My Enrollments</Link>
           }
+          <Link to='/discussion'>Discussion</Link>
         </div>
         {user
           ? <UserButton />
