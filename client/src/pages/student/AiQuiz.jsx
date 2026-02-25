@@ -30,8 +30,20 @@ const AiQuiz = () => {
     // History State
     const [quizHistory, setQuizHistory] = useState([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
+    const [loadingType, setLoadingType] = useState('generating'); // 'generating', 'submitting', 'loading'
+
+    // Popup State
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+    const [animatePopup, setAnimatePopup] = useState(false);
 
     // Initial Route Handling
+    useEffect(() => {
+        if (showConfirmPopup) {
+            setTimeout(() => setAnimatePopup(true), 10);
+        } else {
+            setAnimatePopup(false);
+        }
+    }, [showConfirmPopup]);
     useEffect(() => {
         if (quizId) {
             if (location.pathname.includes('/ai-quiz/view/')) {
@@ -49,6 +61,7 @@ const AiQuiz = () => {
     }, [quizId, location.pathname]);
 
     const fetchQuizDetails = async (id) => {
+        setLoadingType('loading');
         setQuizState('loading');
         try {
             const token = await getToken();
@@ -76,6 +89,7 @@ const AiQuiz = () => {
     };
 
     const fetchQuizForTaking = async (id) => {
+        setLoadingType('loading');
         setQuizState('loading');
         try {
             const token = await getToken();
@@ -88,11 +102,38 @@ const AiQuiz = () => {
                     return navigate(`/ai-quiz/view/${id}`);
                 }
                 setCurrentQuiz(data.quiz);
-                setUserAnswers(new Array(data.quiz.questions.length).fill(''));
-                setTimeLeft(data.quiz.numberOfQuestions * 60);
+
+                // Persistence Logic
+                const savedProgress = JSON.parse(localStorage.getItem(`quiz_progress_${id}`));
+                let initialAnswers;
+                let initialTime;
+
+                if (savedProgress) {
+                    initialAnswers = savedProgress.answers;
+                    const remaining = Math.floor((savedProgress.endTime - Date.now()) / 1000);
+
+                    if (remaining <= 0) {
+                        toast.info("Time expired for this attempt.");
+                        setUserAnswers(initialAnswers);
+                        submitQuiz(true, true, initialAnswers, id);
+                        return;
+                    }
+                    initialTime = remaining;
+                } else {
+                    initialAnswers = new Array(data.quiz.questions.length).fill('');
+                    initialTime = data.quiz.numberOfQuestions * 60;
+                    const endTime = Date.now() + (initialTime * 1000);
+                    localStorage.setItem(`quiz_progress_${id}`, JSON.stringify({
+                        endTime,
+                        answers: initialAnswers
+                    }));
+                }
+
+                setUserAnswers(initialAnswers);
+                setTimeLeft(initialTime);
                 setQuizState('active');
                 setActiveTab('generate');
-                startTimer(data.quiz.numberOfQuestions * 60);
+                startTimer(initialTime);
             } else {
                 toast.error(data.message);
                 navigate('/ai-quiz');
@@ -132,6 +173,7 @@ const AiQuiz = () => {
         if (!topics.trim()) {
             return toast.error("Please enter at least one topic");
         }
+        setLoadingType('generating');
         setQuizState('loading');
         try {
             const token = await getToken();
@@ -181,42 +223,55 @@ const AiQuiz = () => {
 
     const handleAnswer = (questionIndex, option) => {
         const newAnswers = [...userAnswers];
-        newAnswers[questionIndex] = option;
+        // Toggle: if clicking the same option, set to empty string (unselect)
+        newAnswers[questionIndex] = newAnswers[questionIndex] === option ? '' : option;
         setUserAnswers(newAnswers);
+
+        // Persist answers
+        const savedProgress = JSON.parse(localStorage.getItem(`quiz_progress_${currentQuiz._id}`));
+        if (savedProgress) {
+            savedProgress.answers = newAnswers;
+            localStorage.setItem(`quiz_progress_${currentQuiz._id}`, JSON.stringify(savedProgress));
+        }
     };
 
-    const submitQuiz = async (isAuto = false) => {
+    const submitQuiz = async (isAuto = false, isConfirmed = false, answersToSubmit = null, quizIdOverride = null) => {
         if (timerInterval) clearInterval(timerInterval);
 
-        if (!isAuto && userAnswers.includes('')) {
-            if (!window.confirm("You have some unanswered questions. Do you still want to submit?")) {
-                startTimer(timeLeft);
-                return;
-            }
+        const currentAnswers = answersToSubmit || userAnswers;
+        const targetQuizId = quizIdOverride || (currentQuiz ? currentQuiz._id : null);
+
+        // Always show popup for manual submissions if not already confirmed
+        if (!isAuto && !isConfirmed) {
+            setShowConfirmPopup(true);
+            return;
         }
 
+        setShowConfirmPopup(false);
+        setLoadingType('submitting');
         setQuizState('loading');
         try {
             const token = await getToken();
             const { data } = await axios.post(`${backendUrl}/api/ai/submit-quiz`,
-                { quizId: currentQuiz._id, userAnswers },
+                { quizId: targetQuizId, userAnswers: currentAnswers },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (data.success) {
                 setQuizResult(data);
                 setQuizState('result');
+                localStorage.removeItem(`quiz_progress_${targetQuizId}`);
                 if (isAuto) toast.info("Time is up! Quiz submitted automatically.");
-                navigate(`/ai-quiz/view/${currentQuiz._id}`);
+                navigate(`/ai-quiz/view/${targetQuizId}`);
             } else {
                 toast.error(data.message);
                 setQuizState('active');
-                startTimer(timeLeft);
+                if (!isAuto) startTimer(timeLeft);
             }
         } catch (error) {
             toast.error(error.message);
             setQuizState('active');
-            startTimer(timeLeft);
+            if (!isAuto) startTimer(timeLeft);
         }
     };
 
@@ -289,7 +344,7 @@ const AiQuiz = () => {
             </div>
 
             <div className="flex flex-col items-center mb-10">
-                <h2 className="text-3xl font-bold text-white text-center">Generate AI Quiz</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-white text-center tracking-tight">Generate AI Quiz</h2>
             </div>
             <div className="space-y-8">
                 <div>
@@ -298,7 +353,7 @@ const AiQuiz = () => {
                         type="text"
                         value={topics}
                         onChange={(e) => setTopics(e.target.value)}
-                        placeholder="e.g. Quantum Physics, React Architecture..."
+                        placeholder="e.g. Quantum Physics, Node js..."
                         className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:bg-white/[0.08] transition-all duration-300 font-bold"
                     />
                 </div>
@@ -346,19 +401,19 @@ const AiQuiz = () => {
     const renderActiveQuiz = () => (
         <div className="max-w-4xl mx-auto pb-20">
             {/* Sticky Header */}
-            <div className="sticky top-0 z-40 bg-black/60 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex justify-between items-center -mx-4 sm:mx-0 sm:rounded-b-2xl mb-8">
-                <div className="flex items-center gap-2">
-                    <span className="text-gray-400 text-sm hidden sm:inline">Remaining:</span>
-                    <span className={`font-mono text-xl sm:text-2xl font-bold ${timeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-green-400'}`}>
+            <div className="sticky top-0 z-[60] bg-[#0f081d]/90 backdrop-blur-xl border-b border-white/10 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center -mx-4 sm:mx-0 sm:rounded-b-2xl mb-8">
+                <div className="flex items-center gap-2 md:gap-4">
+                    <span className="text-gray-400 text-[10px] md:text-sm hidden xs:inline uppercase tracking-widest font-bold">Remaining:</span>
+                    <span className={`font-mono text-xl md:text-2xl font-black tracking-tighter ${timeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-green-500'}`}>
                         {formatTime(timeLeft)}
                     </span>
                 </div>
-                <div className="text-white font-semibold text-sm sm:text-base">
-                    AI QUIZ ATTEMPT
+                <div className="text-white font-black text-[10px] md:text-sm uppercase tracking-[0.2em] hidden sm:block">
+                    AI Quiz Attempt
                 </div>
                 <button
                     onClick={() => submitQuiz(false)}
-                    className="bg-green-600 hover:bg-green-500 text-white px-4 sm:px-8 py-2 rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 active:scale-95 text-sm sm:text-base"
+                    className="bg-green-600 hover:bg-green-500 text-white px-4 md:px-8 py-2 md:py-2.5 rounded-full md:rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-green-900/20 active:scale-95"
                 >
                     Finish & Submit
                 </button>
@@ -368,16 +423,16 @@ const AiQuiz = () => {
                 {currentQuiz.questions.map((q, qIndex) => (
                     <div key={qIndex} className="bg-white/5 border border-white/10 rounded-[2rem] p-8 sm:p-10 shadow-2xl transition-all hover:bg-white/[0.08] relative overflow-hidden group">
                         <div className="absolute top-0 left-0 w-2 h-full bg-purple-600/20 group-hover:bg-purple-600 transition-all"></div>
-                        <div className="flex justify-between items-start mb-8 gap-6">
-                            <div className="space-y-2 flex-1">
-                                <div className="text-purple-400 font-black text-xs uppercase tracking-[0.3em]">Question {qIndex + 1}</div>
-                                <h3 className="text-xl sm:text-2xl text-white font-bold leading-tight">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 md:mb-10">
+                            <div className="space-y-1 md:space-y-2 flex-1">
+                                <div className="text-purple-400 font-black text-[9px] md:text-xs uppercase tracking-[0.3em]">Question {qIndex + 1}</div>
+                                <h3 className="text-lg md:text-3xl text-white font-bold leading-tight md:leading-[1.1]">
                                     {q.question}
                                 </h3>
                             </div>
-                            <span className="px-4 py-1.5 bg-white/5 text-gray-400 text-[10px] sm:text-xs rounded-full border border-white/10 whitespace-nowrap uppercase tracking-widest font-black shrink-0">
+                            <div className="px-4 py-1.5 bg-white/5 text-gray-400 text-[10px] md:text-xs rounded-full border border-white/10 whitespace-nowrap uppercase tracking-widest font-black shrink-0 self-start md:self-auto">
                                 {q.topic}
-                            </span>
+                            </div>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-5">
                             {q.options.map((option, oIndex) => (
@@ -389,11 +444,11 @@ const AiQuiz = () => {
                                         : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:border-white/20 hover:text-gray-200'
                                         }`}
                                 >
-                                    <div className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center flex-shrink-0 text-sm font-black transition-all ${userAnswers[qIndex] === option ? 'bg-purple-500 border-purple-500 text-white' : 'border-gray-700 text-gray-600 group-hover:border-gray-500'
+                                    <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg md:rounded-xl border-2 flex items-center justify-center flex-shrink-0 text-xs md:text-sm font-black transition-all ${userAnswers[qIndex] === option ? 'bg-purple-500 border-purple-500 text-white' : 'border-gray-700 text-gray-600 group-hover:border-gray-500'
                                         }`}>
                                         {String.fromCharCode(65 + oIndex)}
                                     </div>
-                                    <span className="flex-1 min-w-0 break-words leading-relaxed font-medium">{option}</span>
+                                    <span className="flex-1 min-w-0 break-words leading-relaxed font-medium text-sm md:text-base">{option}</span>
                                 </button>
                             ))}
                         </div>
@@ -418,15 +473,15 @@ const AiQuiz = () => {
                         }>{quizResult.score}%</span>
                     </h2>
 
-                    <div className="flex justify-center gap-10 sm:gap-20 mt-10">
+                    <div className="flex justify-center gap-6 sm:gap-20 mt-10">
                         <div className="text-center">
-                            <div className="text-3xl font-black text-white">{quizResult.correctCount}</div>
-                            <div className="text-[10px] uppercase font-bold text-gray-500 tracking-tighter">Correctly Solved</div>
+                            <div className="text-2xl sm:text-3xl font-black text-white">{quizResult.correctCount}</div>
+                            <div className="text-[9px] sm:text-[10px] uppercase font-black text-gray-500 tracking-widest">Correct</div>
                         </div>
-                        <div className="w-px h-12 bg-white/10"></div>
+                        <div className="w-px h-10 sm:h-12 bg-white/10 my-auto"></div>
                         <div className="text-center">
-                            <div className="text-3xl font-black text-white">{currentQuiz.questions.length}</div>
-                            <div className="text-[10px] uppercase font-bold text-gray-500 tracking-tighter">Total Questions</div>
+                            <div className="text-2xl sm:text-3xl font-black text-white">{currentQuiz.questions.length}</div>
+                            <div className="text-[9px] sm:text-[10px] uppercase font-black text-gray-500 tracking-widest">Total</div>
                         </div>
                     </div>
 
@@ -460,18 +515,18 @@ const AiQuiz = () => {
                         return (
                             <div key={qIndex} className={`bg-white/5 border-2 rounded-[2rem] p-8 sm:p-10 shadow-2xl relative overflow-hidden group ${isCorrect ? 'border-green-500/20' : 'border-red-500/20'}`}>
                                 <div className={`absolute top-0 left-0 w-2 h-full ${isCorrect ? 'bg-green-500/40' : 'bg-red-500/40'}`}></div>
-                                <div className="flex justify-between items-start mb-8 gap-6">
-                                    <div className="space-y-2 flex-1">
-                                        <div className={`font-black text-xs uppercase tracking-[0.3em] ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 md:mb-10">
+                                    <div className="space-y-1 md:space-y-2 flex-1">
+                                        <div className={`font-black text-[10px] md:text-xs uppercase tracking-[0.3em] ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
                                             Question {qIndex + 1} • {isCorrect ? 'Correct' : 'Incorrect'}
                                         </div>
-                                        <h4 className="text-xl sm:text-2xl text-white font-bold leading-tight">
+                                        <h4 className="text-xl md:text-3xl text-white font-bold leading-tight md:leading-[1.1]">
                                             {q.question}
                                         </h4>
                                     </div>
-                                    <span className="px-4 py-1.5 bg-white/5 text-gray-400 text-[10px] sm:text-xs rounded-full border border-white/10 whitespace-nowrap uppercase tracking-widest font-black shrink-0">
+                                    <div className="px-4 py-1.5 bg-white/5 text-gray-400 text-[10px] md:text-xs rounded-full border border-white/10 whitespace-nowrap uppercase tracking-widest font-black shrink-0 self-start md:self-auto">
                                         {q.topic}
-                                    </span>
+                                    </div>
                                 </div>
                                 <div className="grid sm:grid-cols-2 gap-5">
                                     {q.options.map((option, oIndex) => {
@@ -516,14 +571,20 @@ const AiQuiz = () => {
 
     const renderHistory = () => (
         <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl font-black text-white mb-8 px-2 flex items-center gap-3">
-                {/* <span className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🕒</span> */}
+            <h2 className="text-2xl md:text-3xl font-black text-white mb-8 px-2 flex items-center gap-3 tracking-tight">
                 Quiz History
             </h2>
             {loadingHistory ? (
-                <div className="flex flex-col items-center justify-center p-40">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-                    <p className="text-blue-400 font-mono text-xs uppercase tracking-widest animate-pulse">Loading Records</p>
+                <div className="flex flex-col items-center justify-center p-40 space-y-10">
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                        <div className="w-32 h-32 border-[6px] border-blue-500/10 border-t-blue-500 rounded-full animate-spin"></div>
+                        <div className="absolute inset-0 flex items-center justify-center text-4xl animate-pulse">
+                            🕒
+                        </div>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-blue-400 font-mono text-xs uppercase tracking-widest animate-pulse">Loading Records</p>
+                    </div>
                 </div>
             ) : quizHistory.length === 0 ? (
                 <div className="text-center p-20 bg-white/5 rounded-3xl border border-white/10 shadow-inner">
@@ -534,9 +595,9 @@ const AiQuiz = () => {
                     {quizHistory.map((quiz, index) => (
                         <div key={index} className="bg-white/5 border border-white/10 rounded-[1.25rem] p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-white/[0.08] transition-all group overflow-hidden relative">
                             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/40 group-hover:bg-blue-500 transition-colors"></div>
-                            <div className="space-y-3 flex-1 px-4">
-                                <div className="flex flex-wrap items-center gap-3">
-                                    <span className="text-lg font-black text-white group-hover:text-blue-300 transition-colors uppercase tracking-tight">{quiz.topics.join(", ")}</span>
+                            <div className="space-y-2 flex-1 px-4">
+                                <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                                    <span className="text-base md:text-lg font-black text-white group-hover:text-blue-300 transition-colors uppercase tracking-tight">{quiz.topics.join(", ")}</span>
                                     <span className={`px-2 py-0.5 text-[9px] rounded-lg uppercase font-black tracking-tighter border ${quiz.difficulty === 'Easy' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                                         quiz.difficulty === 'Medium' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
                                             'bg-red-500/10 text-red-500 border-red-500/20'
@@ -571,21 +632,100 @@ const AiQuiz = () => {
         </div>
     );
 
+    const renderConfirmPopup = () => {
+        const attendedCount = userAnswers.filter(ans => ans !== '').length;
+        const totalCount = currentQuiz?.numberOfQuestions || 0;
+        const remainingCount = totalCount - attendedCount;
+        const isComplete = remainingCount === 0;
+
+        const handleClose = () => {
+            setAnimatePopup(false);
+            setTimeout(() => {
+                setShowConfirmPopup(false);
+                startTimer(timeLeft);
+            }, 300);
+        };
+
+        const handleConfirm = () => {
+            setAnimatePopup(false);
+            setTimeout(() => {
+                submitQuiz(false, true);
+            }, 300);
+        };
+
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                <div
+                    className={`absolute inset-0 bg-[#0f081d]/80 backdrop-blur-sm transition-opacity duration-300 ${animatePopup ? 'opacity-100' : 'opacity-0'}`}
+                    onClick={handleClose}
+                ></div>
+                <div className={`
+                    bg-[#1a112e] border border-white/10 p-8 rounded-[2rem] max-w-md w-full relative z-10 shadow-2xl 
+                    transition-all duration-300 transform 
+                    ${animatePopup ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-8'}
+                `}>
+                    <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${isComplete ? 'bg-green-500/10' : 'bg-orange-500/10'}`}>
+                        <span className="text-4xl">{isComplete ? '✅' : '⚠️'}</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white text-center mb-2">
+                        {isComplete ? 'Ready to Submit?' : 'Unanswered Questions'}
+                    </h3>
+                    <p className="text-gray-400 text-center mb-6 leading-relaxed">
+                        {isComplete
+                            ? "Great job! You've answered all questions. Ready to see your results?"
+                            : `You still have ${remainingCount} ${remainingCount === 1 ? 'question' : 'questions'} left unanswered.`}
+                    </p>
+
+                    {/* Stats Box */}
+                    <div className="bg-white/5 rounded-2xl p-4 flex justify-between mb-8 border border-white/5 font-mono">
+                        <div className="text-center flex-1">
+                            <div className="text-2xl font-black text-blue-400">{attendedCount}</div>
+                            <div className="text-[10px] text-gray-500 uppercase tracking-widest">Attended</div>
+                        </div>
+                        <div className="w-px bg-white/10 my-2"></div>
+                        <div className="text-center flex-1">
+                            <div className={`text-2xl font-black ${isComplete ? 'text-green-500' : 'text-orange-500'}`}>{remainingCount}</div>
+                            <div className="text-[10px] text-gray-500 uppercase tracking-widest">Remaining</div>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                        <button
+                            onClick={handleClose}
+                            className="flex-1 bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl transition-all border border-white/10"
+                        >
+                            {isComplete ? 'Review Again' : 'Back to Quiz'}
+                        </button>
+                        <button
+                            onClick={handleConfirm}
+                            className={`flex-1 text-white font-bold py-3 rounded-xl transition-all shadow-lg ${isComplete
+                                ? 'bg-gradient-to-r from-green-600 to-emerald-600 shadow-green-900/20'
+                                : 'bg-gradient-to-r from-orange-600 to-red-600 shadow-orange-900/20'
+                                }`}
+                        >
+                            Submit Anyway
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
-        <div className="min-h-screen px-4 py-8 md:px-12 lg:px-24">
+        <div className="min-h-screen px-4 md:px-12 lg:px-24 py-8">
             {/* Tab Navigation */}
             {quizState === 'config' || activeTab === 'history' ? (
                 <div className="flex justify-center mb-16">
                     <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-2xl">
                         <button
                             onClick={() => setActiveTab('generate')}
-                            className={`px-10 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'generate' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/40 translate-y-[-1px]' : 'text-gray-500 hover:text-white'}`}
+                            className={`px-6 md:px-10 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'generate' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/40 translate-y-[-1px]' : 'text-gray-500 hover:text-white'}`}
                         >
                             Builder
                         </button>
                         <button
                             onClick={() => setActiveTab('history')}
-                            className={`px-10 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40 translate-y-[-1px]' : 'text-gray-500 hover:text-white'}`}
+                            className={`px-6 md:px-10 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40 translate-y-[-1px]' : 'text-gray-500 hover:text-white'}`}
                         >
                             Logbook
                         </button>
@@ -597,14 +737,18 @@ const AiQuiz = () => {
             {quizState === 'loading' ? (
                 <div className="flex flex-col items-center justify-center p-40 space-y-10">
                     <div className="relative w-32 h-32 flex items-center justify-center">
-                        <div className="w-32 h-32 border-[6px] border-purple-500/10 border-t-purple-500 rounded-full animate-spin"></div>
+                        <div className={`w-32 h-32 border-[6px] rounded-full animate-spin ${loadingType === 'submitting' ? 'border-green-500/10 border-t-green-500' : 'border-purple-500/10 border-t-purple-500'}`}></div>
                         <div className="absolute inset-0 flex items-center justify-center text-4xl animate-pulse">
-                            🧬
+                            {loadingType === 'submitting' ? '📝' : '🧬'}
                         </div>
                     </div>
                     <div className="text-center">
-                        <h3 className="text-3xl font-black text-white mb-3 tracking-tighter">Generating Quiz...</h3>
-                        <p className="text-gray-500 font-mono text-sm uppercase tracking-[0.2em] animate-pulse">Please wait while generating your quiz...</p>
+                        <h3 className="text-3xl font-bold text-white mb-3">
+                            {loadingType === 'submitting' ? 'Submitting Quiz...' : loadingType === 'generating' ? 'Generating Quiz...' : 'Loading...'}
+                        </h3>
+                        <p className="text-gray-500 font-mono text-sm uppercase tracking-[0.2em] animate-pulse">
+                            {loadingType === 'submitting' ? 'Please wait while we process your results...' : loadingType === 'generating' ? 'Please wait while generating your quiz...' : 'Fetching data, please wait...'}
+                        </p>
                     </div>
                 </div>
             ) : activeTab === 'generate' ? (
@@ -616,6 +760,8 @@ const AiQuiz = () => {
             ) : (
                 renderHistory()
             )}
+
+            {showConfirmPopup && renderConfirmPopup()}
         </div>
     );
 };
