@@ -125,18 +125,24 @@ export const submitQuiz = async (req, res) => {
         const score = Math.round((correctCount / quiz.questions.length) * 100);
 
         // Generate AI Feedback
-        const weakTopics = [...new Set(quiz.questions
-            .filter((q, index) => !isAnswerCorrect(userAnswers[index], q.correctAnswer, q.options))
-            .map(q => q.topic))];
+        let feedback = "Great job on completing the quiz! Keep practicing to improve your score.";
+        try {
+            const weakTopics = [...new Set(quiz.questions
+                .filter((q, index) => !isAnswerCorrect(userAnswers[index], q.correctAnswer, q.options))
+                .map(q => q.topic))];
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const feedbackPrompt = `User scored ${score}% on topics: ${quiz.topics.join(", ")}.
-        Weak areas: ${weakTopics.join(", ") || "None"}.
-        Provide a one-line short improvement suggestion (max 20 words). Return plain text only.`;
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            const feedbackPrompt = `User scored ${score}% on topics: ${quiz.topics.join(", ")}.
+            Weak areas: ${weakTopics.join(", ") || "None"}.
+            Provide a one-line short improvement suggestion (max 20 words). Return plain text only.`;
 
-        const result = await model.generateContent(feedbackPrompt);
-        const response = await result.response;
-        const feedback = response.text().trim();
+            const result = await model.generateContent(feedbackPrompt);
+            const response = await result.response;
+            feedback = response.text().trim();
+        } catch (aiError) {
+            console.error("AI Feedback Generation Error (Skipping):", aiError.message);
+            // feedback already has default value
+        }
 
         quiz.userAnswers = userAnswers;
         quiz.correctCount = correctCount;

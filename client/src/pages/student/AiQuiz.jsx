@@ -34,7 +34,36 @@ const AiQuiz = () => {
 
     // Popup State
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+    const [showExitConfirmPopup, setShowExitConfirmPopup] = useState(false);
     const [animatePopup, setAnimatePopup] = useState(false);
+
+    // Navigation Blocker (Custom implementation for BrowserRouter compatibility)
+    useEffect(() => {
+        if (quizState !== 'active') return;
+
+        // Push a state into the history to intercept the back button
+        window.history.pushState(null, '', window.location.href);
+
+        const handlePopState = (e) => {
+            // When user clicks back, show the popup and push state again to "stay"
+            setShowExitConfirmPopup(true);
+            window.history.pushState(null, '', window.location.href);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [quizState]);
+
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (quizState === 'active') {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [quizState]);
 
     // Initial Route Handling
     useEffect(() => {
@@ -236,6 +265,9 @@ const AiQuiz = () => {
     };
 
     const submitQuiz = async (isAuto = false, isConfirmed = false, answersToSubmit = null, quizIdOverride = null) => {
+        // Guard: Prevent multiple submissions if already loading/submitting
+        if (quizState === 'loading' || loadingType === 'submitting') return;
+
         if (timerInterval) clearInterval(timerInterval);
 
         const currentAnswers = answersToSubmit || userAnswers;
@@ -264,12 +296,14 @@ const AiQuiz = () => {
                 if (isAuto) toast.info("Time is up! Quiz submitted automatically.");
                 navigate(`/ai-quiz/view/${targetQuizId}`);
             } else {
-                toast.error(data.message);
+                // Return to active state but show error
+                toast.error(data.message || "Submission failed. Please try again.");
                 setQuizState('active');
                 if (!isAuto) startTimer(timeLeft);
             }
         } catch (error) {
-            toast.error(error.message);
+            console.error("Submission Error:", error);
+            toast.error(error.response?.data?.message || error.message || "Failed to submit quiz.");
             setQuizState('active');
             if (!isAuto) startTimer(timeLeft);
         }
@@ -401,7 +435,7 @@ const AiQuiz = () => {
     const renderActiveQuiz = () => (
         <div className="max-w-4xl mx-auto pb-20">
             {/* Sticky Header */}
-            <div className="sticky top-0 z-[60] bg-[#0f081d]/90 backdrop-blur-xl border-b border-white/10 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center -mx-4 sm:mx-0 sm:rounded-b-2xl mb-8">
+            <div className="sticky top-1 z-[60] bg-[#0f081d]/90 backdrop-blur-xl border-b border-white/10 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center -mx-4 sm:mx-0 sm:rounded-2xl mb-8">
                 <div className="flex items-center gap-2 md:gap-4">
                     <span className="text-gray-400 text-[10px] md:text-sm hidden xs:inline uppercase tracking-widest font-bold">Remaining:</span>
                     <span className={`font-mono text-xl md:text-2xl font-black tracking-tighter ${timeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-green-500'}`}>
@@ -632,6 +666,63 @@ const AiQuiz = () => {
         </div>
     );
 
+    const renderExitConfirmPopup = () => {
+        const handleClose = () => {
+            setAnimatePopup(false);
+            setTimeout(() => {
+                setShowExitConfirmPopup(false);
+            }, 300);
+        };
+
+        const handleConfirm = async () => {
+            setAnimatePopup(false);
+            // Submit quiz automatically before leaving
+            await submitQuiz(true, true);
+            setTimeout(() => {
+                setShowExitConfirmPopup(false);
+                setQuizState('config');
+                navigate('/ai-quiz');
+            }, 300);
+        };
+
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                <div
+                    className={`absolute inset-0 bg-[#0f081d]/80 backdrop-blur-sm transition-opacity duration-300 ${animatePopup ? 'opacity-100' : 'opacity-0'}`}
+                    onClick={handleClose}
+                ></div>
+                <div className={`
+                    bg-[#1a112e] border border-white/10 p-8 rounded-[2rem] max-w-md w-full relative z-10 shadow-2xl 
+                    transition-all duration-300 transform 
+                    ${animatePopup ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-8'}
+                `}>
+                    <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span className="text-4xl">🚪</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white text-center mb-2">Leave Quiz?</h3>
+                    <p className="text-gray-400 text-center mb-6 leading-relaxed">
+                        If you leave now, your quiz will be <span className="text-red-400 font-bold uppercase">automatically submitted</span> with your current progress.
+                    </p>
+
+                    <div className="flex gap-4">
+                        <button
+                            onClick={handleClose}
+                            className="flex-1 bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl transition-all border border-white/10"
+                        >
+                            Back to Quiz
+                        </button>
+                        <button
+                            onClick={handleConfirm}
+                            className="flex-1 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-red-900/20"
+                        >
+                            Leave & Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderConfirmPopup = () => {
         const attendedCount = userAnswers.filter(ans => ans !== '').length;
         const totalCount = currentQuiz?.numberOfQuestions || 0;
@@ -712,7 +803,7 @@ const AiQuiz = () => {
     };
 
     return (
-        <div className="min-h-screen px-4 md:px-12 lg:px-24 py-8">
+        <div className={`min-h-screen px-4 md:px-12 lg:px-24 ${quizState === 'active' || quizState === 'loading' ? 'pt-1 pb-8' : 'py-8'}`}>
             {/* Tab Navigation */}
             {quizState === 'config' || activeTab === 'history' ? (
                 <div className="flex justify-center mb-16">
@@ -762,6 +853,7 @@ const AiQuiz = () => {
             )}
 
             {showConfirmPopup && renderConfirmPopup()}
+            {showExitConfirmPopup && renderExitConfirmPopup()}
         </div>
     );
 };
