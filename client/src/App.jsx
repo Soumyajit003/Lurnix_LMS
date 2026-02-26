@@ -19,7 +19,7 @@ import DiscussionPage from './pages/student/DiscussionPage'
 import CommunityPage from './pages/student/CommunityPage'
 import PostDetailsPage from './pages/student/PostDetailsPage'
 import ComingSoon from './pages/student/ComingSoon'
-import AiQuiz from './pages/student/AiQuiz'
+import AiQuiz from './features/ai-quiz/pages/AiQuizPage'
 
 const App = () => {
 
@@ -45,9 +45,7 @@ const App = () => {
         <Route path="/discussion/post/:postId" element={<PostDetailsPage />} />
 
         {/* AI Features */}
-        <Route path="/ai-quiz" element={<AiQuiz />} />
-        <Route path="/ai-quiz/take/:quizId" element={<AiQuiz />} />
-        <Route path="/ai-quiz/view/:quizId" element={<AiQuiz />} />
+        <Route path="/ai-quiz/*" element={<AiQuiz />} />
         <Route path="/ai-roadmap" element={<ComingSoon featureName="AI Career Roadmap" />} />
         <Route path="/ai-resume" element={<ComingSoon featureName="AI Resume Review" />} />
         <Route path='/educator' element={<Educator />}>
