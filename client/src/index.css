@@ -7,6 +7,10 @@
 * {
   font-family: Outfit;
 }
+::selection {
+  color: white;
+  background: #9500ffb1;
+}
 
 @layer base {
   html {
