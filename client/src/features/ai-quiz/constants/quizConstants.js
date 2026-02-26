@@ -15,6 +15,7 @@ export const LOADING_TYPES = {
     SUBMITTING: 'submitting',
     LOADING: 'loading'
 };
+
 export const DIFFICULTY_LEVELS = [
     { label: 'Easy', value: 'Easy' },
     { label: 'Medium', value: 'Medium' },
