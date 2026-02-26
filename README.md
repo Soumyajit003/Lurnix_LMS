@@ -1,5 +1,3 @@
-﻿# Lurnix_LMS
-
 # 📘 Lurnix – Modern LMS Platform
 
 ## 🚀 Overview
@@ -199,3 +197,4 @@ Lurnix aims to become a community-powered LMS where:
 ## 🧑‍💻 Author
 
 Built with ❤️ as a full-stack learning and product architecture project.
+
