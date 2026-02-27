@@ -10,7 +10,7 @@ It combines:
 - 👨‍🏫 Educator Dashboard  
 - 👩‍🎓 Student Enrollment System  
 - 💬 Community Discussion Platform  
-- 🤖 AI Integration (Gemini via n8n / API)  
+- 🤖 AI Integration (Gemini API)  
 - 🔐 Secure Authentication with Clerk  
 - 🌙 Modern Dark UI with Glassmorphism  
 
@@ -197,4 +197,5 @@ Lurnix aims to become a community-powered LMS where:
 ## 🧑‍💻 Author
 
 Built with ❤️ as a full-stack learning and product architecture project.
+
 
