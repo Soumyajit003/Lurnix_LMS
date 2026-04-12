@@ -4,7 +4,7 @@ import User from "../models/User.js";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Generate Quiz
+// Generate Quiz feature
 export const generateQuiz = async (req, res) => {
     try {
         const { topics, difficulty, numberOfQuestions } = req.body;
