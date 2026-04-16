@@ -103,7 +103,7 @@ const isAnswerCorrect = (userAns, correctAns, options) => {
     return false;
 };
 
-// Submit Quiz
+// Submit Quiz feature
 export const submitQuiz = async (req, res) => {
     try {
         const { quizId, userAnswers } = req.body;
