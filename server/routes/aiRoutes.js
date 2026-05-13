@@ -1,5 +1,5 @@
 import express from "express";
-import { generateQuiz, getQuizById, getUserQuizzes, submitQuiz } from "../controllers/aiController.js";
+import { generateQuiz, getQuizById, getUserQuizzes, submitQuiz, generateRoadmap, saveRoadmap, getUserRoadmaps } from "../controllers/aiController.js";
 
 const aiRouter = express.Router();
 
@@ -15,5 +15,10 @@ aiRouter.post("/generate-quiz", requireAuth, generateQuiz);
 aiRouter.post("/submit-quiz", requireAuth, submitQuiz);
 aiRouter.get("/user-quizzes", requireAuth, getUserQuizzes);
 aiRouter.get("/quiz/:quizId", requireAuth, getQuizById);
+
+// Roadmap Routes
+aiRouter.post("/roadmap", requireAuth, generateRoadmap);
+aiRouter.post("/roadmap/save", requireAuth, saveRoadmap);
+aiRouter.get("/roadmap/user", requireAuth, getUserRoadmaps);
 
 export default aiRouter;
