@@ -16,7 +16,7 @@ export const generateQuiz = async (req, res) => {
             return res.json({ success: false, message: "Missing required fields" });
         }
 
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         const prompt = `You are an expert quiz generator.
         Generate ${numberOfQuestions} multiple-choice questions about: ${topics}.
@@ -133,7 +133,7 @@ export const submitQuiz = async (req, res) => {
                 .filter((q, index) => !isAnswerCorrect(userAnswers[index], q.correctAnswer, q.options))
                 .map(q => q.topic))];
 
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
             const feedbackPrompt = `User scored ${score}% on topics: ${quiz.topics.join(", ")}.
             Weak areas: ${weakTopics.join(", ") || "None"}.
             Provide a one-line short improvement suggestion (max 20 words). Return plain text only.`;
@@ -204,7 +204,7 @@ export const generateRoadmap = async (req, res) => {
             return res.json({ success: false, message: "Missing required fields" });
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         const prompt = `Generate a detailed learning roadmap for a user who wants to: ${goal}.
         
@@ -248,13 +248,13 @@ export const generateRoadmap = async (req, res) => {
         // Integrate with existing courses
         // For each phase, try to find matching courses
         const allCourses = await Course.find({ isPublished: true }).select('courseTitle _id courseThumbnail educator coursePrice');
-        
+
         for (let phase of roadmapData.phases) {
             const recommendedCourses = [];
             for (let course of allCourses) {
                 // Simple keyword matching for demo purposes
-                const match = phase.topics.some(topic => 
-                    course.courseTitle.toLowerCase().includes(topic.toLowerCase()) || 
+                const match = phase.topics.some(topic =>
+                    course.courseTitle.toLowerCase().includes(topic.toLowerCase()) ||
                     topic.toLowerCase().includes(course.courseTitle.toLowerCase())
                 );
                 if (match) {
