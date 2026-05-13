@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Quiz from "../models/Quiz.js";
 import User from "../models/User.js";
+import Roadmap from "../models/Roadmap.js";
+import Course from "../models/Course.js";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -14,7 +16,7 @@ export const generateQuiz = async (req, res) => {
             return res.json({ success: false, message: "Missing required fields" });
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         const prompt = `You are an expert quiz generator.
         Generate ${numberOfQuestions} multiple-choice questions about: ${topics}.
@@ -131,7 +133,7 @@ export const submitQuiz = async (req, res) => {
                 .filter((q, index) => !isAnswerCorrect(userAnswers[index], q.correctAnswer, q.options))
                 .map(q => q.topic))];
 
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
             const feedbackPrompt = `User scored ${score}% on topics: ${quiz.topics.join(", ")}.
             Weak areas: ${weakTopics.join(", ") || "None"}.
             Provide a one-line short improvement suggestion (max 20 words). Return plain text only.`;
@@ -188,6 +190,121 @@ export const getUserQuizzes = async (req, res) => {
         const quizzes = await Quiz.find({ userId }).sort({ createdAt: -1 });
 
         res.json({ success: true, quizzes });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// Generate AI Roadmap
+export const generateRoadmap = async (req, res) => {
+    try {
+        const { goal, level, studyTime, learningStyle } = req.body;
+
+        if (!goal || !level || !studyTime || !learningStyle) {
+            return res.json({ success: false, message: "Missing required fields" });
+        }
+
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+        const prompt = `Generate a detailed learning roadmap for a user who wants to: ${goal}.
+        
+        Requirements:
+        - Current level: ${level}
+        - Daily study time: ${studyTime}
+        - Learning style: ${learningStyle}
+
+        Return response in strict JSON format:
+        {
+          "title": "A catchy title for the roadmap",
+          "estimatedDuration": "Total time to complete",
+          "phases": [
+            {
+              "phaseTitle": "Phase 1: ...",
+              "duration": "Duration of this phase",
+              "topics": ["Topic 1", "Topic 2", ...],
+              "projects": ["Mini project name"],
+              "milestone": "What will be achieved"
+            }
+          ]
+        }
+
+        Return only valid JSON. Do not include markdown code blocks.`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text();
+
+        // Cleanup JSON
+        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+
+        let roadmapData;
+        try {
+            roadmapData = JSON.parse(text);
+        } catch (e) {
+            console.error("Gemini JSON parse error:", e);
+            return res.json({ success: false, message: "Failed to parse roadmap from AI" });
+        }
+
+        // Integrate with existing courses
+        // For each phase, try to find matching courses
+        const allCourses = await Course.find({ isPublished: true }).select('courseTitle _id courseThumbnail educator coursePrice');
+
+        for (let phase of roadmapData.phases) {
+            const recommendedCourses = [];
+            for (let course of allCourses) {
+                // Simple keyword matching for demo purposes
+                const match = phase.topics.some(topic =>
+                    course.courseTitle.toLowerCase().includes(topic.toLowerCase()) ||
+                    topic.toLowerCase().includes(course.courseTitle.toLowerCase())
+                );
+                if (match) {
+                    recommendedCourses.push(course);
+                }
+            }
+            phase.recommendedCourses = recommendedCourses.slice(0, 2); // Limit to 2 matches
+        }
+
+        res.json({ success: true, roadmap: roadmapData });
+
+    } catch (error) {
+        console.error("Generate Roadmap Error:", error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// Save Roadmap
+export const saveRoadmap = async (req, res) => {
+    try {
+        const { goal, level, studyTime, learningStyle, roadmapData } = req.body;
+        const userId = req.auth.userId;
+
+        if (!roadmapData) {
+            return res.json({ success: false, message: "No roadmap data to save" });
+        }
+
+        const newRoadmap = await Roadmap.create({
+            userId,
+            goal,
+            level,
+            studyTime,
+            learningStyle,
+            roadmapData
+        });
+
+        res.json({ success: true, message: "Roadmap saved successfully", roadmap: newRoadmap });
+    } catch (error) {
+        console.error("Save Roadmap Error:", error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// Get User Roadmaps
+export const getUserRoadmaps = async (req, res) => {
+    try {
+        const userId = req.auth.userId;
+        const roadmaps = await Roadmap.find({ userId }).sort({ createdAt: -1 });
+
+        res.json({ success: true, roadmaps });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }
