@@ -1,4 +1,4 @@
-# 📘 Lurnix – Modern LMS Platform
+# 📘 Lurnix – AI Powered Online Learning Platform
 
 ## 🚀 Overview
 
