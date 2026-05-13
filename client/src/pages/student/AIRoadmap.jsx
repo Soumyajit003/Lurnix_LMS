@@ -136,7 +136,7 @@ const AIRoadmap = () => {
             {/* Hero Section */}
             <div className="text-center py-12 md:py-16 animate-fadeIn">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-tight">
-                    🚀 AI Learning <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-500">Roadmap Generator</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-500">Roadmap Generator</span> with AI
                 </h1>
                 <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
                     Generate personalized step-by-step learning paths powered by AI to achieve your career goals faster.
@@ -146,99 +146,144 @@ const AIRoadmap = () => {
             <div className="flex flex-col lg:flex-row gap-10">
                 {/* Form Section */}
                 <div className="w-full lg:w-1/3 xl:w-1/4">
-                    <div className="bg-[#11081f]/60 backdrop-blur-2xl border border-white/10 p-6 md:p-8 rounded-[2rem] shadow-2xl sticky top-24">
-                        <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                            <div className="p-2 bg-purple-500/20 rounded-xl">
-                                <img src={assets.quiz_icon} alt="" className="w-6 h-6 brightness-200" />
-                            </div> 
-                            Customize
-                        </h2>
+                    <div className="bg-[#11081f]/40 backdrop-blur-3xl border border-white/10 p-6 md:p-8 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] sticky top-24">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center border border-white/10 shadow-inner">
+                                <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-white tracking-tight">Personalize</h2>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Tailor your journey</p>
+                            </div>
+                        </div>
                         
                         <form onSubmit={handleGenerate} className="space-y-6">
-                            <div>
-                                <label className="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2 ml-1">Your Learning Goal</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="e.g. ai/ml developer" 
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-purple-500/50 focus:bg-white/10 transition-all placeholder:text-gray-600"
-                                    value={goal}
-                                    onChange={(e) => setGoal(e.target.value)}
-                                    required
-                                />
+                            <div className="group">
+                                <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-2.5 ml-1 transition-colors group-focus-within:text-purple-400">Your Learning Goal</label>
+                                <div className="relative">
+                                    <input 
+                                        type="text" 
+                                        placeholder="e.g. android developer" 
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-purple-500/40 focus:bg-white/10 transition-all placeholder:text-gray-600 shadow-inner"
+                                        value={goal}
+                                        onChange={(e) => setGoal(e.target.value)}
+                                        required
+                                    />
+                                    <div className="absolute inset-0 rounded-2xl bg-purple-500/5 opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity"></div>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2 ml-1">Level</label>
-                                    <select 
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer"
-                                        value={level}
-                                        onChange={(e) => setLevel(e.target.value)}
-                                    >
-                                        <option className="bg-[#1a0b2e]">Beginner</option>
-                                        <option className="bg-[#1a0b2e]">Intermediate</option>
-                                        <option className="bg-[#1a0b2e]">Advanced</option>
-                                    </select>
+                                <div className="group">
+                                    <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-2.5 ml-1 group-focus-within:text-purple-400">Level</label>
+                                    <div className="relative">
+                                        <select 
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-purple-500/40 focus:bg-white/10 transition-all appearance-none cursor-pointer shadow-inner pr-10"
+                                            value={level}
+                                            onChange={(e) => setLevel(e.target.value)}
+                                        >
+                                            <option className="bg-[#1a0b2e]">Beginner</option>
+                                            <option className="bg-[#1a0b2e]">Intermediate</option>
+                                            <option className="bg-[#1a0b2e]">Advanced</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 group-focus-within:text-purple-400">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2 ml-1">Study Time</label>
-                                    <select 
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer"
-                                        value={studyTime}
-                                        onChange={(e) => setStudyTime(e.target.value)}
-                                    >
-                                        <option className="bg-[#1a0b2e]">1 hour/day</option>
-                                        <option className="bg-[#1a0b2e]">2 hours/day</option>
-                                        <option className="bg-[#1a0b2e]">4 hours/day</option>
-                                        <option className="bg-[#1a0b2e]">Flexible</option>
-                                    </select>
+                                <div className="group">
+                                    <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-2.5 ml-1 group-focus-within:text-purple-400">Study Time</label>
+                                    <div className="relative">
+                                        <select 
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-purple-500/40 focus:bg-white/10 transition-all appearance-none cursor-pointer shadow-inner pr-10"
+                                            value={studyTime}
+                                            onChange={(e) => setStudyTime(e.target.value)}
+                                        >
+                                            <option className="bg-[#1a0b2e]">1 hour/day</option>
+                                            <option className="bg-[#1a0b2e]">2 hours/day</option>
+                                            <option className="bg-[#1a0b2e]">4 hours/day</option>
+                                            <option className="bg-[#1a0b2e]">Flexible</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 group-focus-within:text-purple-400">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2 ml-1">Style</label>
-                                <select 
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer"
-                                    value={learningStyle}
-                                    onChange={(e) => setLearningStyle(e.target.value)}
-                                >
-                                    <option className="bg-[#1a0b2e]">Mixed</option>
-                                    <option className="bg-[#1a0b2e]">Video-based</option>
-                                    <option className="bg-[#1a0b2e]">Project-based</option>
-                                    <option className="bg-[#1a0b2e]">Reading-based</option>
-                                </select>
+                            <div className="group">
+                                <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-2.5 ml-1 group-focus-within:text-purple-400">Learning Style</label>
+                                <div className="relative">
+                                    <select 
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-purple-500/40 focus:bg-white/10 transition-all appearance-none cursor-pointer shadow-inner pr-10"
+                                        value={learningStyle}
+                                        onChange={(e) => setLearningStyle(e.target.value)}
+                                    >
+                                        <option className="bg-[#1a0b2e]">Mixed</option>
+                                        <option className="bg-[#1a0b2e]">Video-based</option>
+                                        <option className="bg-[#1a0b2e]">Project-based</option>
+                                        <option className="bg-[#1a0b2e]">Reading-based</option>
+                                    </select>
+                                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 group-focus-within:text-purple-400">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
 
                             <button 
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-[length:200%_auto] hover:bg-right text-white font-bold py-4.5 rounded-2xl transition-all duration-500 shadow-[0_0_20px_rgba(147,51,234,0.3)] flex items-center justify-center gap-3 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`w-full bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-[length:200%_auto] hover:bg-right text-white font-bold py-4.5 rounded-2xl transition-all duration-500 shadow-[0_10px_25px_-5px_rgba(147,51,234,0.4)] hover:shadow-[0_15px_30px_-5px_rgba(147,51,234,0.6)] flex items-center justify-center gap-3 relative overflow-hidden group/btn ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
+                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
                                 {loading ? (
                                     <>
                                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                        Processing...
+                                        <span>Architecting...</span>
                                     </>
                                 ) : (
-                                    <>✨ Generate Path</>
+                                    <>
+                                        <span className="relative z-10 py-4">Generate Path</span>
+                                    </>
                                 )}
                             </button>
                         </form>
 
                         {savedRoadmaps.length > 0 && (
-                            <div className="mt-8 border-t border-white/10 pt-6">
-                                <h3 className="text-white/80 font-bold text-xs uppercase tracking-widest mb-4">Saved Paths</h3>
+                            <div className="mt-10 border-t border-white/5 pt-8">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-white/50 font-bold text-[10px] uppercase tracking-[0.2em]">History</h3>
+                                    <span className="px-2 py-0.5 bg-white/5 rounded-md text-[9px] text-gray-500 border border-white/5 font-bold">{savedRoadmaps.length}</span>
+                                </div>
                                 <div className="space-y-3 max-h-52 overflow-y-auto pr-2 custom-scrollbar">
                                     {savedRoadmaps.map((r, i) => (
                                         <div 
                                             key={i} 
                                             onClick={() => setRoadmap(r.roadmapData)}
-                                            className="p-3.5 bg-white/5 hover:bg-purple-500/10 border border-white/5 rounded-2xl cursor-pointer transition-all group flex flex-col gap-1"
+                                            className="p-4 bg-white/5 hover:bg-purple-600/10 border border-white/5 rounded-2xl cursor-pointer transition-all group flex flex-col gap-2 relative overflow-hidden"
                                         >
-                                            <p className="text-sm text-gray-300 line-clamp-1 group-hover:text-purple-400 font-medium">{r.roadmapData.title}</p>
-                                            <div className="flex justify-between items-center">
-                                                <p className="text-[10px] text-gray-500">{new Date(r.createdAt).toLocaleDateString()}</p>
-                                                <span className="text-[10px] px-2 py-0.5 bg-white/5 rounded-full text-gray-400">{r.level}</span>
+                                            <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <p className="text-xs text-gray-300 line-clamp-1 group-hover:text-purple-400 font-bold transition-colors">{r.roadmapData.title}</p>
+                                            <div className="flex justify-between items-center mt-1">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="w-1 h-1 rounded-full bg-gray-600"></div>
+                                                    <p className="text-[9px] text-gray-500 font-medium">{new Date(r.createdAt).toLocaleDateString()}</p>
+                                                </div>
+                                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold border ${
+                                                    r.level === 'Beginner' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
+                                                    r.level === 'Intermediate' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 
+                                                    'bg-red-500/10 text-red-500 border-red-500/20'
+                                                }`}>
+                                                    {r.level}
+                                                </span>
                                             </div>
                                         </div>
                                     ))}
@@ -297,30 +342,38 @@ const AIRoadmap = () => {
                                 </div>
                             </div>
 
-                            <div className="relative pt-4 px-4 sm:px-0">
-                                {/* Vertical Line - Adjusted for better alignment */}
-                                <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500/50 via-blue-500/50 to-transparent hidden md:block -translate-x-1/2"></div>
-                                <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500/50 via-blue-500/50 to-transparent md:hidden"></div>
+                            <div className="relative pt-8 pb-20">
+                                {/* Vertical Line - Perfectly Centered with Glow */}
+                                <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2 hidden md:block overflow-hidden">
+                                    <div className="h-full w-full bg-gradient-to-b from-purple-500/0 via-purple-500/50 to-blue-500/0"></div>
+                                    <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-purple-400 to-transparent animate-pulse"></div>
+                                </div>
+                                <div className="absolute left-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-purple-500/50 via-blue-500/50 to-transparent md:hidden"></div>
 
-                                <div className="space-y-20 relative">
+                                <div className="space-y-24 md:space-y-0 relative">
                                     {roadmap.phases.map((phase, idx) => (
-                                        <div key={idx} className={`relative flex flex-col md:flex-row items-center gap-10 ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                                        <div key={idx} className={`relative flex flex-col md:flex-row items-center justify-between mb-16 md:mb-32 ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
                                             
-                                            {/* Dot on Timeline - Perfectly Centered */}
-                                            <div className="absolute left-6 md:left-1/2 -translate-x-1/2 w-5 h-5 bg-[#05010d] border-4 border-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)] z-20"></div>
+                                            {/* Dot on Timeline - Perfectly Centered on the Line */}
+                                            <div className="absolute left-6 md:left-1/2 -translate-x-1/2 w-6 h-6 bg-[#05010d] border-4 border-purple-500 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.6)] z-30 transition-transform hover:scale-125 duration-300">
+                                                <div className="absolute inset-0 bg-purple-500/20 rounded-full animate-ping"></div>
+                                            </div>
                                             
-                                            {/* Content Card */}
-                                            <div className={`w-full md:w-[45%] bg-[#11081f]/40 backdrop-blur-2xl border border-white/10 p-8 md:p-10 rounded-[2.5rem] hover:border-purple-500/40 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(168,85,247,0.1)] group relative overflow-hidden ${idx % 2 === 0 ? 'md:mr-auto' : 'md:ml-auto'}`}>
-                                                <div className="absolute top-0 right-0 w-40 h-40 bg-purple-600/5 blur-[60px] -z-10 group-hover:bg-purple-600/10 transition-all"></div>
+                                            {/* Content Card - Fixed Width for Balance */}
+                                            <div className={`w-full md:w-[44%] bg-[#11081f]/40 backdrop-blur-3xl border border-white/10 p-8 md:p-10 rounded-[3rem] hover:border-purple-500/40 transition-all duration-700 hover:shadow-[0_30px_70px_rgba(0,0,0,0.6)] group relative overflow-hidden`}>
+                                                <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/10 blur-[60px] -z-10 group-hover:bg-purple-600/20 transition-all duration-700"></div>
                                                 
-                                                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 text-white font-bold text-lg shadow-lg shadow-purple-900/30">
+                                                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10">
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="w-14 h-14 flex items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-purple-600 to-blue-600 text-white font-black text-xl shadow-[0_10px_20px_-5px_rgba(147,51,234,0.5)] group-hover:scale-110 transition-transform duration-500">
                                                             {idx + 1}
                                                         </div>
                                                         <div>
-                                                            <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-purple-400 transition-colors leading-tight">{phase.phaseTitle}</h3>
-                                                            <p className="text-purple-400/80 text-sm font-semibold">{phase.duration}</p>
+                                                            <h3 className="text-xl md:text-2xl font-black text-white group-hover:text-purple-400 transition-colors leading-tight tracking-tight">{phase.phaseTitle}</h3>
+                                                            <div className="flex items-center gap-2 mt-1">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                                                                <p className="text-purple-400/80 text-xs font-bold uppercase tracking-widest">{phase.duration}</p>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
