@@ -3,6 +3,9 @@ import Quiz from "../models/Quiz.js";
 import User from "../models/User.js";
 import Roadmap from "../models/Roadmap.js";
 import Course from "../models/Course.js";
+import ResumeReview from "../models/ResumeReview.js";
+import { PDFParse } from "pdf-parse";
+import fs from "fs";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -305,6 +308,159 @@ export const getUserRoadmaps = async (req, res) => {
         const roadmaps = await Roadmap.find({ userId }).sort({ createdAt: -1 });
 
         res.json({ success: true, roadmaps });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// Review Resume
+export const reviewResume = async (req, res) => {
+    try {
+        const userId = req.auth.userId;
+        const { targetJobDescription, manualResumeText } = req.body;
+
+        let resumeText = '';
+        let fileName = 'Pasted Resume';
+
+        if (req.file) {
+            fileName = req.file.originalname;
+            try {
+                const dataBuffer = fs.readFileSync(req.file.path);
+                const parser = new PDFParse({ data: new Uint8Array(dataBuffer) });
+                const result = await parser.getText();
+                resumeText = result.text;
+                
+                // Cleanup the temp file
+                try {
+                    fs.unlinkSync(req.file.path);
+                } catch (unlinkErr) {
+                    console.error("Failed to delete temp file:", unlinkErr);
+                }
+            } catch (pdfErr) {
+                console.error("PDF Parsing Error:", pdfErr);
+                return res.json({ success: false, message: "Failed to parse PDF file. Ensure it is a valid PDF." });
+            }
+        } else if (manualResumeText) {
+            resumeText = manualResumeText;
+        }
+
+        if (!resumeText || resumeText.trim() === '') {
+            return res.json({ success: false, message: "Please upload a resume file or paste your resume text." });
+        }
+
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+        let prompt = `You are an expert AI Resume Coach and ATS (Applicant Tracking System) Auditor.
+        Analyze the following resume and provide a detailed, constructive audit.
+        
+        Resume text:
+        """
+        ${resumeText}
+        """`;
+
+        if (targetJobDescription && targetJobDescription.trim() !== '') {
+            prompt += `\n\nTarget Job Description to align and tailor against:
+            """
+            ${targetJobDescription}
+            """`;
+        }
+
+        prompt += `\n\nRequirements:
+        1. Rate the resume overall (0-100 score). If a target Job Description was provided, the score should heavily incorporate tailoring and keyword matching.
+        2. Break down the score into sub-metrics: formattingScore, contentImpactScore, languageScore, and tailoringScore (if no Job Description is provided, calculate tailoringScore as 0).
+        3. Highlight 3-4 distinct strengths of this resume.
+        4. Detail 3-4 specific key improvements. Each improvement must have:
+           - "category": The area (e.g. "Impact & Metrics", "Keyword Inclusion", "Structure", "Language")
+           - "issue": The precise issue identified
+           - "suggestion": Exact actionable advice
+           - "example": A realistic Before/After rewording example showing how to apply the advice.
+        5. Provide section-by-section qualitative feedback (max 30 words per section) for: summary, experience, education, skills, projects.
+        6. Perform a keyword analysis:
+           - Identify matched keywords found in both the resume and the target Job Description (or general standard keywords for their domain if no Job Description is provided).
+           - Identify missing keywords that are in the Job Description but absent in the resume (or standard keywords for their domain they should add).
+           - Provide a concise optimization recommendation.
+
+        Return response in strict JSON format:
+        {
+          "score": 85,
+          "summary": "Detailed summary paragraph of the audit...",
+          "formattingScore": 90,
+          "contentImpactScore": 75,
+          "languageScore": 88,
+          "tailoringScore": 80,
+          "strengths": ["Strength 1...", "Strength 2..."],
+          "improvements": [
+            {
+              "category": "...",
+              "issue": "...",
+              "suggestion": "...",
+              "example": "Before: ... \\nAfter: ..."
+            }
+          ],
+          "sectionFeedback": {
+            "summary": "...",
+            "experience": "...",
+            "education": "...",
+            "skills": "...",
+            "projects": "..."
+          },
+          "keywordAnalysis": {
+            "matchingKeywords": ["Keyword1", "Keyword2"],
+            "missingKeywords": ["Keyword3", "Keyword4"],
+            "recommendation": "..."
+          }
+        }
+
+        Return ONLY valid JSON. Do not return any markdown code blocks.`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text();
+
+        // Cleanup JSON
+        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+
+        let reviewData;
+        try {
+            reviewData = JSON.parse(text);
+        } catch (e) {
+            console.error("Gemini JSON parse error:", e);
+            try {
+                const start = text.indexOf('{');
+                const end = text.lastIndexOf('}');
+                if (start !== -1 && end !== -1) {
+                    reviewData = JSON.parse(text.slice(start, end + 1));
+                } else {
+                    throw new Error("JSON structure not found");
+                }
+            } catch (innerErr) {
+                return res.json({ success: false, message: "Failed to parse resume audit analysis from AI. Please try again." });
+            }
+        }
+
+        const newReview = await ResumeReview.create({
+            userId,
+            fileName,
+            resumeText,
+            targetJobDescription: targetJobDescription || '',
+            reviewData
+        });
+
+        res.json({ success: true, review: newReview });
+
+    } catch (error) {
+        console.error("Review Resume Error:", error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// Get User Resume Reviews
+export const getUserResumeReviews = async (req, res) => {
+    try {
+        const userId = req.auth.userId;
+        const reviews = await ResumeReview.find({ userId }).sort({ createdAt: -1 });
+
+        res.json({ success: true, reviews });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }

@@ -1,5 +1,6 @@
 import express from "express";
-import { generateQuiz, getQuizById, getUserQuizzes, submitQuiz, generateRoadmap, saveRoadmap, getUserRoadmaps } from "../controllers/aiController.js";
+import { generateQuiz, getQuizById, getUserQuizzes, submitQuiz, generateRoadmap, saveRoadmap, getUserRoadmaps, reviewResume, getUserResumeReviews } from "../controllers/aiController.js";
+import upload from "../configs/multer.js";
 
 const aiRouter = express.Router();
 
@@ -20,5 +21,9 @@ aiRouter.get("/quiz/:quizId", requireAuth, getQuizById);
 aiRouter.post("/roadmap", requireAuth, generateRoadmap);
 aiRouter.post("/roadmap/save", requireAuth, saveRoadmap);
 aiRouter.get("/roadmap/user", requireAuth, getUserRoadmaps);
+
+// Resume Review Routes
+aiRouter.post("/resume-review", requireAuth, upload.single('resume'), reviewResume);
+aiRouter.get("/resume-reviews", requireAuth, getUserResumeReviews);
 
 export default aiRouter;
