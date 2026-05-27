@@ -21,6 +21,7 @@ import PostDetailsPage from './pages/student/PostDetailsPage'
 import ComingSoon from './pages/student/ComingSoon'
 import AiQuiz from './features/ai-quiz/pages/AiQuizPage'
 import AIRoadmap from './pages/student/AIRoadmap'
+import AIResumeReview from './pages/student/AIResumeReview'
 
 const App = () => {
 
@@ -48,7 +49,7 @@ const App = () => {
         {/* AI Features */}
         <Route path="/ai-quiz/*" element={<AiQuiz />} />
         <Route path="/ai-roadmap" element={<AIRoadmap />} />
-        <Route path="/ai-resume" element={<ComingSoon featureName="AI Resume Review" />} />
+        <Route path="/ai-resume" element={<AIResumeReview />} />
         <Route path='/educator' element={<Educator />}>
           <Route path='/educator' element={<Dashboard />} />
           <Route path='add-course' element={<AddCourse />} />
